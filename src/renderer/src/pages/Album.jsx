@@ -43,11 +43,6 @@ const VideoCard = ({ video, index }) => {
     ipcRenderer.send('stopVideo', { videoId: video.id });
   };
 
-  const handleDeleteVideo = () => {
-    console.log('deleteVideo');
-    ipcRenderer.send('deleteVideo', { videoId: video.id });
-  };
-
   return (
     <div key={index}
       className="relative bg-white rounded-lg bg-opacity-10 backdrop-filter backdrop-blur-lg space-y-4 w-full transition-transform duration-200 hover:scale-105 hover:shadow-lg border border-gray-300 group"
@@ -126,7 +121,6 @@ const VideoCard = ({ video, index }) => {
 
 function Album() {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
   const location = useLocation();
   const playlist = location.state?.video;
   const videos = playlist.items;
@@ -148,16 +142,6 @@ function Album() {
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
-
-  // const renderVideos = () => {
-  //   console.log("render video");
-  //   if (videos && typeof videos === 'object') {
-  //     return Object.values(videos).map((video, index) => (
-  //       <VideoCard key={index} video={video} index={index} />
-  //     ));
-  //   }
-  //   return null;
-  // };
 
   return (
     <div className='flex flex-col h-screen h-full items-center justify-center p-4 border-2 rounded-lg w-full'>
@@ -184,18 +168,7 @@ function Album() {
       <div className='w-full border-t-2 border-gray-200 mb-4'></div>
 
       <main className='w-full flex-grow overflow-auto p-4'>
-        {/* {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {renderSkeletonVideos()}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {renderVideos()}
-          </div>
-        )} */}
-
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {/* {renderVideos()} */}
           {filteredVideos.map((video, index) => (
             <VideoCard key={video.id} video={video} index={index} />
           ))}

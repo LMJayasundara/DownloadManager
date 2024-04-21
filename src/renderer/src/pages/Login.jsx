@@ -18,34 +18,38 @@ function Login() {
   const [password, setPassword] = useState('');
 
   function login() {
-    // const email = document.getElementById('email').value;
-    // const password = document.getElementById('password').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-    // // Reset error messages
-    // setEmailError('');
-    // setPasswordError('');
+    // Reset error messages
+    setEmailError('');
+    setPasswordError('');
 
-    // if (!isValidEmail(email)) {
-    //   setEmailError("Please enter a valid email address.");
-    //   return;
-    // }
+    if (!isValidEmail(email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
 
-    // if (password.trim() === '') {
-    //   setPasswordError("Password cannot be empty.");
-    //   return;
-    // }
-
-    // Sending login data to the main process
-    // ipcRenderer.send('login', { email, password });
-    // navigate("/home");
+    if (password.trim() === '') {
+      setPasswordError("Password cannot be empty.");
+      return;
+    }
 
     ipcRenderer.send('page', { page: 'Login', email: email, password: password });
   }
 
   useEffect(() => {
     ipcRenderer.on('status', (data) => {
-      console.log(data);
-      navigate("/home");
+      // console.log(data);
+      if(data == "success") {
+        navigate("/home");
+      } else{
+        // Reset error messages
+        setEmailError('');
+        setPasswordError('');
+        setEmail('');
+        setPassword('')
+      }
     });
   
     return () => {
@@ -80,7 +84,7 @@ function Login() {
 
         <div className='w-full max-w-xs'>
           {/* test */}
-          <form className='space-y-4'>
+          {/* <form className='space-y-4'>
             <input
               id="email"
               type="email"
@@ -96,9 +100,9 @@ function Login() {
             <button type="button" onClick={login} className='bg-blue-500 text-white w-full px-4 py-2 rounded hover:bg-blue-600 focus:outline-none'>
               Login
             </button>
-          </form>
+          </form> */}
 
-          {/* <form className='space-y-4' onSubmit={(e) => e.preventDefault()}>
+          <form className='space-y-4' onSubmit={(e) => e.preventDefault()}>
             <input
               id="email"
               type="email"
@@ -120,7 +124,7 @@ function Login() {
             <button type="button" onClick={login} className='bg-blue-500 text-white w-full px-4 py-2 rounded hover:bg-blue-600 focus:outline-none'>
               Login
             </button>
-          </form> */}
+          </form>
 
         </div>
       </div>

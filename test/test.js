@@ -278,22 +278,22 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// const ytpl = require('ytpl');
+const ytpl = require('ytpl');
 
-// async function getPlaylistDetails(playlistURL) {
-//   try {
-//     const details = await ytpl(playlistURL);
-//     return details; // Return the details to be used where the function is called
-//   } catch (error) {
-//     console.error('Error fetching playlist details:', error);
-//     throw error; // Rethrow the error if you need to handle it outside
-//   }
-// }
+async function getPlaylistDetails(playlistURL) {
+  try {
+    const details = await ytpl(playlistURL);
+    return details; // Return the details to be used where the function is called
+  } catch (error) {
+    console.error('Error fetching playlist details:', error);
+    throw error; // Rethrow the error if you need to handle it outside
+  }
+}
 
-// // Example usage
-// getPlaylistDetails('https://www.youtube.com/watch?v=WhhMQlpGzdw&list=PLVAdpaiYtiTDEn7YjnGQx5bWq4K4sOexY')
-//   .then(details => console.log(details))
-//   .catch(error => console.error(error));
+// Example usage
+getPlaylistDetails('https://www.youtube.com/watch?v=WhhMQlpGzdw&list=PLVAdpaiYtiTDEn7YjnGQx5bWq4K4sOexY')
+  .then(details => console.log(details))
+  .catch(error => console.error(error));
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -924,14 +924,14 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const { v1, v2 } = require("node-tiklydown");
-// const videoUrl = "https://www.tiktok.com/@sew_mi____gurl/video/7356784739136605456";
-const videoUrl = "https://vt.tiktok.com/ZS84BnrU9";
+// const { v1, v2 } = require("node-tiklydown");
+// // const videoUrl = "https://www.tiktok.com/@sew_mi____gurl/video/7356784739136605456";
+// const videoUrl = "https://vt.tiktok.com/ZS84BnrU9";
 
-v1(videoUrl).then(data => {
-  // Do something with the data
-  console.log(data);
-});
+// v1(videoUrl).then(data => {
+//   // Do something with the data
+//   console.log(data);
+// });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1075,3 +1075,493 @@ v1(videoUrl).then(data => {
 // validateUrl('https://www.youtube.com/watch?v=ZzI9JE0i6Lc'); // YouTube
 // validateUrl('https://www.tiktok.com/@sew_mi____gurl/video/7356784739136605456'); // TikTok
 // validateUrl('https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4'); // Generic Video
+
+//////////////////////////////////////////
+
+            // const data = { ...appInfo.store };
+            // ytdl.getInfo(obj.url).then(info => {
+            // ytdl.getInfo(url, { requestOptions: { headers: { "Cookie": data.cookie } } }).then(info => {
+            //   // Setting up initial download state
+            //   downloadProgress[videoId] = {
+            //     videoprogress: 0,
+            //     audioprogress: 0,
+            //     isDownloading: true,
+            //     videoPausable: new PausablePassThrough(),
+            //     audioPausable: new PausablePassThrough(),
+            //     ffmpegProcess: null,
+            //     type: 'youtube',
+            //     format: 'mp4'
+            //   };
+
+            //   mainWindow.webContents.send('downloadComplete', { videoId, status: false });
+
+            //   const { videoPausable, audioPausable } = downloadProgress[videoId];
+            //   const { selectedItagVideo, selectedItagAudio } = selectFormat(info.formats, quality);
+
+            //   try {
+            //     const format = ytdl.chooseFormat(info.formats, { quality: selectedItagVideo, requestOptions: { headers: { "Cookie": data.cookie } } });
+            //     const audioFormat = ytdl.chooseFormat(info.formats, { quality: selectedItagAudio, requestOptions: { headers: { "Cookie": data.cookie } } });
+
+            //     const videoDownloadStream = ytdl.downloadFromInfo(info, { format: format });
+            //     const audioDownloadStream = ytdl.downloadFromInfo(info, { format: audioFormat });
+
+            //     videoDownloadStream.on('progress', (chunkLength, downloaded, total) => {
+            //       downloadProgress[videoId].videoprogress = ((downloaded / total) * 100).toFixed(2);
+            //       updateProgress();
+            //     });
+
+            //     audioDownloadStream.on('progress', (chunkLength, downloaded, total) => {
+            //       downloadProgress[videoId].audioprogress = ((downloaded / total) * 100).toFixed(2);
+            //       updateProgress();
+            //     });
+
+            //     function updateProgress() {
+            //       const minProgress = Math.min(downloadProgress[videoId].videoprogress, downloadProgress[videoId].audioprogress);
+            //       mainWindow.webContents.send('downloadProgress', { videoId, progress: minProgress });
+            //     }
+
+            //     const outputFilePath = path.join(directoryPath, `${videoId}.mp4`);
+
+            //     const ffmpegProcess = cp.spawn(ffmpegPath, [
+            //       '-y', '-loglevel', 'error', '-hide_banner',
+            //       '-i', 'pipe:3', '-i', 'pipe:4',
+            //       '-map', '0:v', '-map', '1:a',
+            //       '-c', 'copy',
+            //       `${outputFilePath}`
+            //     ], {
+            //       windowsHide: true,
+            //       // stdio: ['inherit', 'inherit', 'inherit', 'pipe', 'pipe']
+            //       stdio: ['ignore', 'ignore', 'ignore', 'pipe', 'pipe']
+            //     });
+
+            //     ffmpegProcess.on('exit', (code, signal) => {
+            //       if (downloadProgress.hasOwnProperty(videoId)) {
+            //         downloadProgress[videoId].isDownloading = false;
+            //       }
+            //       ffmpegProcess.stdio[3].end();
+            //       ffmpegProcess.stdio[4].end();
+            //       console.log(`FFmpeg exited with code ${code} and signal ${signal}`);
+            //       // mainWindow.webContents.send('downloadComplete', { videoId, status: 'Completed', code, signal });
+            //       mainWindow.webContents.send('downloadComplete', { videoId, status: true });
+            //       clearDownloadProgress(downloadProgress, videoId)
+            //     });
+
+            //     ffmpegProcess.on('error', error => {
+            //       console.error('FFmpeg process error:', error);
+            //       mainWindow.webContents.send('downloadError', { videoId, error: error.message });
+            //       clearDownloadProgress(downloadProgress, videoId)
+            //     });
+
+            //     ffmpegProcess.on('close', (code) => {
+            //       // console.log(`FFmpeg exited with code ${code}`);
+            //       // if (code === 0) {
+            //       //   console.log('Processing completed successfully, now safe to delete file if needed.');
+            //       //   // Attempt to delete the file after a short delay
+            //       //   setTimeout(() => {
+            //       //     try {
+            //       //       if (fs.existsSync(outputFilePath)) {
+            //       //         fs.unlinkSync(outputFilePath);
+            //       //         console.log('File successfully deleted');
+            //       //       }
+            //       //     } catch (error) {
+            //       //       console.error('Error deleting file:', error);
+            //       //     }
+            //       //   }, 1000); // Delay file deletion to ensure no handles are left
+            //       // }
+            //       clearDownloadProgress(downloadProgress, videoId)
+            //     });
+
+            //     downloadProgress[videoId].ffmpegProcess = ffmpegProcess;
+            //     videoDownloadStream.pipe(videoPausable).pipe(ffmpegProcess.stdio[3]);
+            //     audioDownloadStream.pipe(audioPausable).pipe(ffmpegProcess.stdio[4]);
+
+            //     videoDownloadStream.on('error', error => console.error('Video stream error:', error));
+            //     audioDownloadStream.on('error', error => console.error('Audio stream error:', error));
+            //     ffmpegProcess.on('error', error => console.error('ffmpeg process error:', error));
+
+            //   } catch (error) {
+            //     console.error('Download initiation failed:', error);
+            //     mainWindow.webContents.send('downloadError', { videoId, error: error.message });
+            //     clearDownloadProgress(downloadProgress, videoId)
+            //   }
+            // })
+
+
+                        // const data = { ...appInfo.store };
+            // ytdl.getInfo(url, { requestOptions: { headers: { "Cookie": data.cookie } } }).then(info => {
+            //   // Setting up initial download state for MP3, similar to MP4 structure
+            //   downloadProgress[videoId] = {
+            //     videoprogress: 0,
+            //     audioprogress: 0,
+            //     isDownloading: true,
+            //     videoPausable: null,
+            //     audioPausable: new PausablePassThrough(),
+            //     ffmpegProcess: null,
+            //     type: 'youtube',
+            //     format: 'mp3'  // Indicate this is an MP3 format
+            //   };
+
+            //   mainWindow.webContents.send('downloadComplete', { videoId, status: false });
+
+            //   const { audioPausable } = downloadProgress[videoId];
+            //   const audioFormat = ytdl.chooseFormat(info.formats, { quality: 'highestaudio', requestOptions: { headers: { "Cookie": data.cookie } } });
+            //   const audioDownloadStream = ytdl.downloadFromInfo(info, { format: audioFormat });
+
+            //   audioDownloadStream.on('progress', (chunkLength, downloaded, total) => {
+            //     const progress = ((downloaded / total) * 100).toFixed(2);
+            //     downloadProgress[videoId].audioprogress = progress;
+            //     mainWindow.webContents.send('downloadProgress', { videoId, progress: progress });
+            //   });
+
+            //   const ffmpegProcess = cp.spawn(ffmpegPath, [
+            //     '-y', '-loglevel', 'error', '-hide_banner',
+            //     '-i', 'pipe:0',  // Input from the first pipe
+            //     '-vn',  // No video
+            //     '-ar', '44100',  // Set audio sample rate to 44.1 kHz
+            //     '-ac', '2',  // Set audio channels to 2 (stereo)
+            //     '-b:a', '192k',  // Bitrate for audio
+            //     '-f', 'mp3',  // MP3 format
+            //     outputFilePath
+            //   ], {
+            //     windowsHide: true,
+            //     stdio: ['pipe', 'ignore', 'ignore', 'ignore']
+            //   });
+
+            //   ffmpegProcess.on('exit', (code, signal) => {
+            //     downloadProgress[videoId].isDownloading = false;
+            //     if (code === 0) {
+            //       console.log('MP3 download and conversion complete');
+            //       mainWindow.webContents.send('downloadComplete', { videoId, status: true });
+            //     } else {
+            //       console.log(`FFmpeg exited with code ${code} and signal ${signal}`);
+            //     }
+            //     clearDownloadProgress(downloadProgress, videoId);
+            //   });
+
+            //   ffmpegProcess.on('error', error => {
+            //     console.error('FFmpeg process error:', error);
+            //     clearDownloadProgress(downloadProgress, videoId);
+            //   });
+
+            //   audioDownloadStream.pipe(audioPausable).pipe(ffmpegProcess.stdio[0]);
+            //   audioDownloadStream.on('error', error => {
+            //     console.error('Audio stream error:', error);
+            //     clearDownloadProgress(downloadProgress, videoId)
+            //   });
+            // }).catch(error => {
+            //   console.error('Download initiation failed:', error);
+            // });
+
+            
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // if (videoType === 'youtube') {
+    //   if (downloadformat === "mp4") {
+    //     const data = { ...appInfo.store };
+    //     // ytdl.getInfo(obj.url).then(info => {
+    //     ytdl.getInfo(url, { requestOptions: { headers: { "Cookie": data.cookie } } }).then(info => {
+    //       // Setting up initial download state
+    //       downloadProgress[videoId] = {
+    //         videoprogress: 0,
+    //         audioprogress: 0,
+    //         isDownloading: true,
+    //         videoPausable: new PausablePassThrough(),
+    //         audioPausable: new PausablePassThrough(),
+    //         ffmpegProcess: null,
+    //         type: videoType,
+    //         format: downloadformat
+    //       };
+
+    //       mainWindow.webContents.send('downloadComplete', { videoId, status: false });
+
+    //       const { videoPausable, audioPausable } = downloadProgress[videoId];
+    //       const { selectedItagVideo, selectedItagAudio } = selectFormat(info.formats, quality);
+
+    //       try {
+    //         const format = ytdl.chooseFormat(info.formats, { quality: selectedItagVideo, requestOptions: { headers: { "Cookie": data.cookie } } });
+    //         const audioFormat = ytdl.chooseFormat(info.formats, { quality: selectedItagAudio, requestOptions: { headers: { "Cookie": data.cookie } } });
+
+    //         const videoDownloadStream = ytdl.downloadFromInfo(info, { format: format });
+    //         const audioDownloadStream = ytdl.downloadFromInfo(info, { format: audioFormat });
+
+    //         videoDownloadStream.on('progress', (chunkLength, downloaded, total) => {
+    //           downloadProgress[videoId].videoprogress = (downloaded / total) ? ((downloaded / total) * 100).toFixed(2) : 0;
+    //           updateProgress();
+    //         });
+
+    //         audioDownloadStream.on('progress', (chunkLength, downloaded, total) => {
+    //           downloadProgress[videoId].audioprogress = (downloaded / total) ? ((downloaded / total) * 100).toFixed(2) : 0;
+    //           updateProgress();
+    //         });
+
+    //         function updateProgress() {
+    //           if(downloadProgress[videoId].videoprogress && downloadProgress[videoId].audioprogress){
+    //             const minProgress = Math.min(downloadProgress[videoId].videoprogress, downloadProgress[videoId].audioprogress);
+    //             mainWindow.webContents.send('downloadProgress', { videoId, progress: minProgress });
+    //           }
+    //         }
+
+    //         const outputFilePath = path.join(directoryPath, `${videoId}.mp4`);
+
+    //         const ffmpegProcess = cp.spawn(ffmpegPath, [
+    //           '-y', '-loglevel', 'error', '-hide_banner',
+    //           '-i', 'pipe:3', '-i', 'pipe:4',
+    //           '-map', '0:v', '-map', '1:a',
+    //           '-c', 'copy',
+    //           `${outputFilePath}`
+    //         ], {
+    //           windowsHide: true,
+    //           // stdio: ['inherit', 'inherit', 'inherit', 'pipe', 'pipe']
+    //           stdio: ['ignore', 'ignore', 'ignore', 'pipe', 'pipe']
+    //         });
+
+    //         ffmpegProcess.on('exit', (code, signal) => {
+    //           if (downloadProgress.hasOwnProperty(videoId)) {
+    //             downloadProgress[videoId].isDownloading = false;
+    //           }
+    //           ffmpegProcess.stdio[3].end();
+    //           ffmpegProcess.stdio[4].end();
+    //           console.log(`FFmpeg exited with code ${code} and signal ${signal}`);
+    //           // mainWindow.webContents.send('downloadComplete', { videoId, status: 'Completed', code, signal });
+    //           mainWindow.webContents.send('downloadComplete', { videoId, status: true });
+    //           clearDownloadProgress(downloadProgress, videoId)
+    //         });
+
+    //         ffmpegProcess.on('error', error => {
+    //           console.error('FFmpeg process error:', error);
+    //           mainWindow.webContents.send('downloadError', { videoId, error: error.message });
+    //           clearDownloadProgress(downloadProgress, videoId)
+    //         });
+
+    //         ffmpegProcess.on('close', (code) => {
+    //           // console.log(`FFmpeg exited with code ${code}`);
+    //           // if (code === 0) {
+    //           //   console.log('Processing completed successfully, now safe to delete file if needed.');
+    //           //   // Attempt to delete the file after a short delay
+    //           //   setTimeout(() => {
+    //           //     try {
+    //           //       if (fs.existsSync(outputFilePath)) {
+    //           //         fs.unlinkSync(outputFilePath);
+    //           //         console.log('File successfully deleted');
+    //           //       }
+    //           //     } catch (error) {
+    //           //       console.error('Error deleting file:', error);
+    //           //     }
+    //           //   }, 1000); // Delay file deletion to ensure no handles are left
+    //           // }
+    //           clearDownloadProgress(downloadProgress, videoId)
+    //         });
+
+    //         downloadProgress[videoId].ffmpegProcess = ffmpegProcess;
+    //         videoDownloadStream.pipe(videoPausable).pipe(ffmpegProcess.stdio[3]);
+    //         audioDownloadStream.pipe(audioPausable).pipe(ffmpegProcess.stdio[4]);
+
+    //         videoDownloadStream.on('error', error => console.error('Video stream error:', error));
+    //         audioDownloadStream.on('error', error => console.error('Audio stream error:', error));
+    //         ffmpegProcess.on('error', error => console.error('ffmpeg process error:', error));
+
+    //       } catch (error) {
+    //         console.error('Download initiation failed:', error);
+    //         mainWindow.webContents.send('downloadError', { videoId, error: error.message });
+    //         clearDownloadProgress(downloadProgress, videoId)
+    //       }
+    //     })
+    //   } else if (downloadformat === "mp3") {
+    //     const data = { ...appInfo.store };
+
+    //     ytdl.getInfo(url, { requestOptions: { headers: { "Cookie": data.cookie } } }).then(info => {
+    //       // Setting up initial download state for MP3, similar to MP4 structure
+    //       downloadProgress[videoId] = {
+    //         audioprogress: 0,
+    //         isDownloading: true,
+    //         audioPausable: new PausablePassThrough(),
+    //         ffmpegProcess: null,
+    //         type: videoType,
+    //         format: downloadformat
+    //       };
+
+    //       mainWindow.webContents.send('downloadComplete', { videoId, status: false });
+
+    //       const { audioPausable } = downloadProgress[videoId];
+    //       const audioFormat = ytdl.chooseFormat(info.formats, { quality: 'highestaudio', requestOptions: { headers: { "Cookie": data.cookie } } });
+    //       const audioDownloadStream = ytdl.downloadFromInfo(info, { format: audioFormat });
+
+    //       audioDownloadStream.on('progress', (chunkLength, downloaded, total) => {
+    //         const progress = ((downloaded / total) * 100).toFixed(2);
+    //         downloadProgress[videoId].audioprogress = progress;
+    //         mainWindow.webContents.send('downloadProgress', { videoId, progress: progress });
+    //       });
+
+    //       const outputFilePath = path.join(directoryPath, `Audio/${videoId}.mp3`);
+    //       const ffmpegProcess = cp.spawn(ffmpegPath, [
+    //         '-y', '-loglevel', 'error', '-hide_banner',
+    //         '-i', 'pipe:0',  // Input from the first pipe
+    //         '-vn',  // No video
+    //         '-ar', '44100',  // Set audio sample rate to 44.1 kHz
+    //         '-ac', '2',  // Set audio channels to 2 (stereo)
+    //         '-b:a', '192k',  // Bitrate for audio
+    //         '-f', 'mp3',  // MP3 format
+    //         outputFilePath
+    //       ], {
+    //         windowsHide: true,
+    //         stdio: ['pipe', 'ignore', 'ignore', 'ignore']
+    //       });
+
+    //       ffmpegProcess.on('exit', (code, signal) => {
+    //         downloadProgress[videoId].isDownloading = false;
+    //         if (code === 0) {
+    //           console.log('MP3 download and conversion complete');
+    //           mainWindow.webContents.send('downloadComplete', { videoId, status: true });
+    //         } else {
+    //           console.log(`FFmpeg exited with code ${code} and signal ${signal}`);
+    //         }
+    //         clearDownloadProgress(downloadProgress, videoId);
+    //       });
+
+    //       ffmpegProcess.on('error', error => {
+    //         console.error('FFmpeg process error:', error);
+    //         clearDownloadProgress(downloadProgress, videoId);
+    //       });
+
+    //       audioDownloadStream.pipe(audioPausable).pipe(ffmpegProcess.stdio[0]);
+    //       audioDownloadStream.on('error', error => {
+    //         console.error('Audio stream error:', error);
+    //         clearDownloadProgress(downloadProgress, videoId)
+    //       });
+    //     }).catch(error => {
+    //       console.error('Download initiation failed:', error);
+    //     });
+    //   }
+    // }
+
+    // if (videoType === 'tiktok') {
+    //   if (downloadformat === "mp4") {
+    //     const outputFilePath = path.join(directoryPath, `${videoId}.mp4`);
+    //     const options = { method: 'GET', fileName: `${videoId}.mp4`, override: true };
+
+    //     downloadProgress[videoId] = {
+    //       videoprogress: 0,
+    //       audioprogress: 0,
+    //       isDownloading: true,
+    //       videoPausable: null,
+    //       audioPausable: null,
+    //       ffmpegProcess: null,
+    //       dl: null,
+    //       type: videoType,
+    //       format: downloadformat
+    //     };
+
+    //     // TikTok or generic
+    //     const data = await v1(url);
+    //     const dl = new DownloaderHelper(data.video.noWatermark, path.dirname(outputFilePath), options);
+    //     downloadProgress[videoId].dl = dl;
+    //     dl.start();
+
+    //     // Log events
+    //     dl.on('download', () => console.log('Download started'))
+    //       .on('pause', () => console.log('Download paused'))
+    //       .on('resume', () => console.log('Download resumed'))
+    //       .on('stop', () => {
+    //         console.log('Download stopped')
+    //         clearDownloadProgress(downloadProgress, videoId)
+    //       })
+    //       .on('end', () => {
+    //         clearDownloadProgress(downloadProgress, videoId)
+    //         console.log('Download completed')
+    //         mainWindow.webContents.send('downloadComplete', { videoId, status: true });
+    //       })
+    //       .on('error', (err) => {
+    //         clearDownloadProgress(downloadProgress, videoId)
+    //         console.error('Download failed:', err)
+    //       })
+    //       .on('progress', (stats) => {
+    //         const percent = stats.progress.toFixed(2);
+    //         mainWindow.webContents.send('downloadProgress', { videoId, progress: percent });
+    //       })
+    //   } else if (downloadformat === "mp3") {
+    //     const outputFilePath = path.join(directoryPath, `Audio/${videoId}.mp3`);
+    //     const options = { method: 'GET', fileName: `${videoId}.mp3`, override: true };
+
+    //     downloadProgress[videoId] = {
+    //       isDownloading: true,
+    //       dl: null,
+    //       type: videoType,
+    //       format: downloadformat
+    //     };
+
+    //     // TikTok or generic
+    //     const data = await v1(url);
+    //     const dl = new DownloaderHelper(data.music.play_url, path.dirname(outputFilePath), options);
+    //     downloadProgress[videoId].dl = dl;
+    //     dl.start();
+
+    //     // Log events
+    //     dl.on('download', () => console.log('Download started'))
+    //       .on('pause', () => console.log('Download paused'))
+    //       .on('resume', () => console.log('Download resumed'))
+    //       .on('stop', () => {
+    //         console.log('Download stopped')
+    //         clearDownloadProgress(downloadProgress, videoId)
+    //       })
+    //       .on('end', () => {
+    //         clearDownloadProgress(downloadProgress, videoId)
+    //         console.log('Download completed')
+    //       })
+    //       .on('error', (err) => {
+    //         clearDownloadProgress(downloadProgress, videoId)
+    //         console.error('Download failed:', err)
+    //       })
+    //       .on('progress', (stats) => {
+    //         const percent = stats.progress.toFixed(2);
+    //         mainWindow.webContents.send('downloadProgress', { videoId, progress: percent });
+    //       })
+    //   }
+    // }
+
+    // if (videoType === 'generic') {
+    //   if (downloadformat === "mp4") {
+    //     const outputFilePath = path.join(directoryPath, `${videoId}.mp4`);
+    //     const options = { method: 'GET', fileName: `${videoId}.mp4`, override: true };
+
+    //     downloadProgress[videoId] = {
+    //       videoprogress: 0,
+    //       audioprogress: 0,
+    //       isDownloading: true,
+    //       videoPausable: null,
+    //       audioPausable: null,
+    //       ffmpegProcess: null,
+    //       dl: null,
+    //       type: videoType,
+    //       format: downloadformat
+    //     };
+
+    //     // TikTok or generic
+    //     const dl = new DownloaderHelper(url, path.dirname(outputFilePath), options);
+    //     downloadProgress[videoId].dl = dl;
+    //     dl.start();
+
+    //     // Log events
+    //     dl.on('download', () => console.log('Download started'))
+    //       .on('pause', () => console.log('Download paused'))
+    //       .on('resume', () => console.log('Download resumed'))
+    //       .on('stop', () => {
+    //         console.log('Download stopped')
+    //         clearDownloadProgress(downloadProgress, videoId)
+    //       })
+    //       .on('end', () => {
+    //         clearDownloadProgress(downloadProgress, videoId)
+    //         console.log('Download completed')
+    //         mainWindow.webContents.send('downloadComplete', { videoId, status: true });
+    //       })
+    //       .on('error', (err) => {
+    //         clearDownloadProgress(downloadProgress, videoId)
+    //         console.error('Download failed:', err)
+    //       })
+    //       .on('progress', (stats) => {
+    //         const percent = stats.progress.toFixed(2);
+    //         mainWindow.webContents.send('downloadProgress', { videoId, progress: percent });
+    //       })
+    //   } else {
+    //     console.log("Not support");
+    //   }
+    // }

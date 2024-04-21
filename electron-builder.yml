@@ -10,6 +10,7 @@ files:
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
 asarUnpack:
   - resources/**
+  - 'node_modules/ffmpeg-static/*'
 win:
   executableName: play-downloader
 nsis:
@@ -40,6 +41,12 @@ linux:
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
+# publish:
+#   provider: generic
+#   url: https://example.com/auto-updates
 publish:
-  provider: generic
-  url: https://example.com/auto-updates
+  provider: github
+  repo: DownloadManagerUpdater
+  owner: LMJayasundara
+  private: false  # or true if your repository is private
+  releaseType: draft  # or 'release' to directly release

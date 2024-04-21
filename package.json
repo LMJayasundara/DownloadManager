@@ -1,17 +1,10 @@
 {
   "name": "play-downloader",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "An Electron application with React",
   "main": "./out/main/index.js",
   "author": "example.com",
   "homepage": "https://electron-vite.org",
-  "publish": [
-    {
-      "provider": "github",
-      "owner": "LMJayasundara",
-      "repo": "DownloadManagerUpdater"
-    }
-  ],
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
@@ -62,6 +55,7 @@
     "electron-vite": "^2.0.0",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
+    "macaddress-local-machine": "^1.0.7",
     "postcss": "^8.4.38",
     "prettier": "^3.2.4",
     "react": "^18.2.0",

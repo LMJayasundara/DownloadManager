@@ -43,7 +43,7 @@ export const DataProvider = ({ children }) => {
         });
 
         ipcRenderer.on('downloadVideoPlaylist', (data) => {
-            ipcRenderer.send('downloadVideo', { url: data.url, quality: data.quality });
+            ipcRenderer.send('downloadVideo', { url: data.url, quality: data.quality, format: "mp4" });
         });
 
         // Clean up the listener when the context provider is unmounted
@@ -65,52 +65,3 @@ export const DataProvider = ({ children }) => {
 };
 
 export const useData = () => useContext(DataContext);
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// import React, { createContext, useContext, useState, useEffect } from 'react';
-// const { ipcRenderer } = window.require('electron');
-
-// export const DataContext = createContext();
-
-// export const DataProvider = ({ children }) => {
-//     const [downloadProgress, setDownloadProgress] = useState({});
-//     const [videos, setVideos] = useState({});
-//     const [playlistDetails, setPlaylistDetails] = useState({});
-
-//     useEffect(() => {
-//         // Listening for download progress updates
-//         const handleDownloadProgress = (event, data) => {
-//             setDownloadProgress(current => ({ ...current, [data.videoId]: data.progress }));
-//         };
-
-//         // Listening for videos data updates
-//         const handleVideoUpdate = (event, videos) => {
-//             setVideos(videos);
-//         };
-
-//         // Listening for playlist details updates
-//         const handlePlaylistDetails = (event, details) => {
-//             setPlaylistDetails(details);
-//         };
-
-//         ipcRenderer.on('downloadProgress', handleDownloadProgress);
-//         ipcRenderer.on('homeVideos', handleVideoUpdate);
-//         ipcRenderer.on('playlistDetails', handlePlaylistDetails);
-
-//         return () => {
-//             // Clean up all listeners when the context provider is unmounted
-//             ipcRenderer.removeListener('downloadProgress', handleDownloadProgress);
-//             ipcRenderer.removeListener('homeVideos', handleVideoUpdate);
-//             ipcRenderer.removeListener('playlistDetails', handlePlaylistDetails);
-//         };
-//     }, []);
-
-//     return (
-//         <DataContext.Provider value={{ downloadProgress, videos, playlistDetails }}>
-//             {children}
-//         </DataContext.Provider>
-//     );
-// };
-
-// export const useData = () => useContext(DataContext);

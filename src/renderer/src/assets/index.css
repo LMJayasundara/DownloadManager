@@ -2,42 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* @layer base {
-    #root {
-        @apply h-full;
-    }
-
-    html,
-    body {
-        @apply h-full
-
-        @apply slect-none;
-
-        @apply bg-transparent;
-
-        @apply font-mono antialiased text-white;
-
-        @apply overflow-hidden;
-    }
-} */
-
-/* @layer base {
-  #root {
-    height: 100%;
-  }
-
-  html,
-  body {
-    height: 100%;
-    user-select: none;
-    background-color: transparent;
-    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow: hidden;
-  }
-} */
-
 @layer base {
   #root {
     height: 100%;

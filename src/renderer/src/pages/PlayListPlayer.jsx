@@ -33,56 +33,6 @@ function PlayListPlayer() {
   const authorPhotoContainerStyle = { paddingTop: '10px' };
 
   return (
-    // <div className='flex h-screen overflow-hidden'>
-    //   {/* Main Content */}
-    //   <div className={`${mainStyle} p-4 transition-margin duration-300 flex flex-col`}>
-    //     {/* Header Section */}
-    //     <div className='w-full flex justify-between items-center mb-4'>
-    //       <button onClick={() => navigate(-1)} className='flex items-center text-gray-600'>
-    //         <FaArrowLeft />
-    //         <span className='ml-2'>Back</span>
-    //       </button>
-    //       <h1 className='text-xl font-bold'>Playlist Player</h1>
-    //       <button className='flex items-center text-gray-600 mr-10'>
-    //         <FaTrash />
-    //         <span className='ml-2'>Delete</span>
-    //       </button>
-    //     </div>
-
-    //     {/* Video Player */}
-    //     <div className='w-full flex-grow' style={videoContainerStyle}>
-    //       <ReactPlayer
-    //         url={videoPath}
-    //         controls
-    //         width='100%'
-    //         height='100%'
-    //       />
-    //     </div>
-
-    //     {/* Video Details */}
-    //     <div className='w-full p-4'>
-    //       <div className='flex items-center'>
-    //         {/* Placeholder for author photo */}
-    //         <div style={{ paddingTop: '10px' }}>
-    //           <img src={selectedVideo.authorPhoto} alt="Author" className="w-12 h-12 rounded-full mr-4" />
-    //         </div>
-    //         <div className='flex-grow'>
-    //           <h2 className='text-xl font-bold'>{selectedVideo.title}</h2>
-    //           <p className='text-sm'>{selectedVideo.author}</p>
-    //         </div>
-    //         <button onClick={toggleDescription} className='text-gray-600 ml-auto'>
-    //           {isExpanded ? <FaAngleUp /> : <FaAngleDown />}
-    //           <span className='ml-2'>{isExpanded ? 'Less' : 'More'}</span>
-    //         </button>
-    //       </div>
-    //       <div style={descriptionStyle}>
-    //         <ReactMarkdown className='text-gray-800 text-sm my-2'>
-    //           {selectedVideo.description || "No description available."}
-    //         </ReactMarkdown>
-    //       </div>
-    //     </div>
-    //   </div>
-
     <div className="flex flex-col h-screen justify-start p-4 border-2 rounded-lg overflow-hidden">
       {/* Header Section */}
       <div className='w-full flex justify-between items-center mb-4 px-4'>

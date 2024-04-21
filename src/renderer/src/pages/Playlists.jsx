@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import { FaPlayCircle, FaEllipsisV } from 'react-icons/fa';
+import { FaEllipsisV } from 'react-icons/fa';
 import { useData } from '../DownloadContext';
 const ipcRenderer = electron.ipcRenderer;
 
@@ -31,12 +31,6 @@ const VideoCard = ({ video, index }) => {
   const goToPlayListAlbum = (video) => {
     navigate('/album', { state: { video } });
   };
-
-  // const handleDeletePlaylist = (e) => {
-  //   console.log('deleteVideo');
-  //   e.stopPropagation();
-  //   ipcRenderer.send('deletePlaylist', { videoId: video.id });
-  // };
 
   return (
     <div key={index}
@@ -125,16 +119,7 @@ function Playlists() {
       </div>
     ));
   };
-
-  // const renderPlaylists = () => {
-  //   if (playlists && typeof playlists === 'object') {
-  //     return Object.values(playlists).map((playlist, index) => (
-  //       <VideoCard key={index} video={playlist} index={index} />
-  //     ));
-  //   }
-  //   return null;
-  // };
-
+  
   useEffect(() => {
     if (!loadingPlaylists) {
       function renderPlaylists() {
