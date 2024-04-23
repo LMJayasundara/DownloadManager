@@ -56,7 +56,7 @@ const VideoCard = ({ video, index }) => {
 
   const handleDownload = () => {
     console.log('Download requested for video ID:', video.id);
-    ipcRenderer.send('downloadVideo', { url: video.url, quality: '720p', format: video.format }); // Ensure these details are correct as per your requirements
+    ipcRenderer.send('downloadVideo', { url: video.url, quality: video.quality, format: video.format }); // Ensure these details are correct as per your requirements
   };
 
   return (
@@ -218,6 +218,7 @@ function Home() {
             <option value="mp3">mp3</option>
           </select>
           <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none"
+            type='submit'
             onClick={sendURL}
           >
             Download

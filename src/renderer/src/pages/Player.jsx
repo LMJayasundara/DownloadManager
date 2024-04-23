@@ -61,24 +61,31 @@ function Player() {
           />
         </div>
 
-        <div className='w-full px-4' style={{ paddingTop: '10px' }}>
-          <div className='flex items-center'>
+        <div className='w-full flex justify-between items-center px-4 mt-2'>
+          <div className='flex'>
             <img src={video.authorPhoto || defaultImage} alt="Author" className="w-12 h-12 rounded-full mr-4" />
-            <div className='flex-grow'>
+            <div>
               <h2 className='text-xl font-bold'>{video.title}</h2>
               <p className='text-sm'>{video.author}</p>
             </div>
-            <button onClick={toggleDescription} className='text-gray-600 ml-auto'>
+          </div>
+          <div className='text-center'>
+            <p className='text-sm text-gray-600'>{video.date} {video.fileSizeMB ? `: ${video.fileSizeMB} mb` : ''}</p>
+          </div>
+          <div>
+            <button onClick={() => setIsExpanded(!isExpanded)} className='flex items-center text-gray-600'>
               {isExpanded ? <FaAngleUp /> : <FaAngleDown />}
               <span className='ml-2'>{isExpanded ? 'Less' : 'More'}</span>
             </button>
           </div>
-          <div style={descriptionStyle}>
-            <ReactMarkdown className='text-gray-800 text-sm my-2'>
-              {video.description}
-            </ReactMarkdown>
-          </div>
         </div>
+
+        <div style={descriptionStyle} className={`w-full px-4 transition-max-height duration-300 ease-in-out ${isExpanded ? 'max-h-28vh' : 'max-h-0'} overflow-hidden`}>
+          <ReactMarkdown className='text-gray-800 text-sm my-2'>
+            {video.description}
+          </ReactMarkdown>
+        </div>
+
       </div>
     </div>
   );

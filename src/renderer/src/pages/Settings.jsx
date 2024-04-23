@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
 import { FaSave, FaDownload, FaTrashAlt, FaArrowLeft } from 'react-icons/fa'; // Example icons
 import { useData } from '../DownloadContext';
 const ipcRenderer = electron.ipcRenderer;
@@ -11,13 +10,12 @@ function Settings() {
 
   // Function to handle logout logic
   const logout = () => {
-    // Here you would clear any authentication tokens, user data, etc.
-    console.log("Logging out..."); // Replace with actual logout logic
-    navigate('/'); // Redirect to login or another appropriate route
+    ipcRenderer.send('logout');
   };
 
   useEffect(() => {
     ipcRenderer.send('page', { page: 'Settings' });
+
     return () => {
       ipcRenderer.removeAllListeners('page');
     };
@@ -58,9 +56,6 @@ function Settings() {
     console.log("Saving Interval:", interval);
     ipcRenderer.send('setCheckPlaylistInterval', { interval: interval });
   };
-
-  const navigate = useNavigate();
-
   return (
     <div className='flex flex-col h-full items-center justify-center p-4 border-2 rounded-lg w-full'>
 

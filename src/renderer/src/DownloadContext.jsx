@@ -11,6 +11,9 @@ export const DataProvider = ({ children }) => {
     const [playlists, setPlaylists] = useState({});
     const [loadingPlaylists, setLoadingPlaylists] = useState(true);
     const [appInfo, setAppInfo] = useState({});
+    const [checkRes, setCheckRes] = useState({});
+    const [status, setStatus] = useState({});
+    const [logoutStatus, setLogoutStatus] = useState(false);
 
 
     useEffect(() => {
@@ -46,6 +49,21 @@ export const DataProvider = ({ children }) => {
             ipcRenderer.send('downloadVideo', { url: data.url, quality: data.quality, format: "mp4" });
         });
 
+        ipcRenderer.on('checkRes', (data) => {
+            setCheckRes(data);
+        });
+
+        ipcRenderer.on('status', (data) => {
+            setStatus(data);
+            if(data.status === "success"){
+                setLogoutStatus(false);
+            }
+        });
+
+        ipcRenderer.on('confirmLogout', () => {
+            setLogoutStatus(true);
+        });
+
         // Clean up the listener when the context provider is unmounted
         return () => {
             ipcRenderer.removeAllListeners('downloadProgress');
@@ -54,11 +72,14 @@ export const DataProvider = ({ children }) => {
             ipcRenderer.removeAllListeners('palylistVideos');
             ipcRenderer.removeAllListeners('appInfo');
             ipcRenderer.removeAllListeners('downloadVideoPlaylist');
+            ipcRenderer.removeAllListeners('checkRes');
+            ipcRenderer.removeAllListeners('status');
+            ipcRenderer.removeAllListeners('confirmLogout');
         };
     }, []);
 
     return (
-        <DataContext.Provider value={{ downloadProgress, downloadComplete, videos, loading, playlists, loadingPlaylists, appInfo }}>
+        <DataContext.Provider value={{ downloadProgress, downloadComplete, videos, loading, playlists, loadingPlaylists, appInfo, checkRes, status, logoutStatus }}>
             {children}
         </DataContext.Provider>
     );

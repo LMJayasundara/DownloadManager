@@ -4,7 +4,7 @@ const ffprobePath = require('ffprobe-static').path.replace('app.asar', 'app.asar
 const ffmpegPath = require('ffmpeg-static').replace('app.asar', 'app.asar.unpacked');
 
 // shoud add quality
-export const addMetadata = async (filePath, videoId, type, format, status, url) => {
+export const addMetadata = async (filePath, videoId, type, format, status, url, size) => {
   const metadataFilePath = `${filePath}.temp.${format}`;
 
   let ffmpegArgs = [
@@ -16,16 +16,15 @@ export const addMetadata = async (filePath, videoId, type, format, status, url) 
     `-metadata`, `format=${format}`,
     `-metadata`, `status=${status}`,
     `-metadata`, `url=${url}`,
+    `-metadata`, `size=${size}`
   ];
 
   if (format === "mp4") {
-    ffmpegArgs.push('-c:v', 'copy');  // Copy video codec settings without re-encoding
-    ffmpegArgs.push('-c:a', 'copy');  // Copy audio codec settings without re-encoding
+    ffmpegArgs.push('-c', 'copy');
     ffmpegArgs.push(metadataFilePath); // Output file
   } else if (format === "mp3") {
-    ffmpegArgs.push('-vn');  // No video
-    ffmpegArgs.push('-c:a', 'libmp3lame');  // Encode audio to MP3
-    ffmpegArgs.push('-b:a', '192k');  // Bitrate for audio
+    ffmpegArgs.push('-c:a', 'copy');
+    ffmpegArgs.push('-id3v2_version', '3');
     ffmpegArgs.push(metadataFilePath); // Output file
   } else {
     console.log("Unsupported format");
@@ -33,7 +32,7 @@ export const addMetadata = async (filePath, videoId, type, format, status, url) 
   }
 
   // Create and manage the FFmpeg process
-  const ffmpegProcess = cp.spawn(ffmpegPath.replace("app.asar", "app.asar.unpacked"), ffmpegArgs, {
+  const ffmpegProcess = cp.spawn(ffmpegPath, ffmpegArgs, {
     windowsHide: true,
     stdio: ['ignore', 'ignore', 'pipe']
   });

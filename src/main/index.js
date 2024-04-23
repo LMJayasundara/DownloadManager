@@ -122,6 +122,22 @@ function confirmLogout(mainWindow) {
   });
 }
 
+function errorDialog(mainWindow, error) {
+  return new Promise((resolve) => {
+    const options = {
+      type: 'error',
+      buttons: ['Okay'],
+      title: 'Error!',
+      message: "Got An Error",
+      details: `${error, message}`
+    };
+
+    dialog.showMessageBox(mainWindow, options).then(result => {
+      resolve(result.response === 0); // Resolve to true if 'Yes' (button index 0) was clicked
+    });
+  });
+}
+
 async function createWindow() {
   // Dynamically get the icon
   const icon = await getIcon();
@@ -464,8 +480,16 @@ app.whenReady().then(() => {
         this.managerCallback(this.videoId, 'delete');
 
         if (code === 0) {
-          await addMetadata(this.outputFilePath, this.videoId, "youtube", 'mp4', "COMPLETE", this.url);
+          const fileSize = fs.statSync(this.outputFilePath).size; // Get file size in bytes
+          const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2); // Convert bytes to megabytes
+
+          await addMetadata(this.outputFilePath, this.videoId, "youtube", 'mp4', "COMPLETE", this.url, fileSizeMB);
           mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: true });
+
+          const existingVideos = await getStoreAsync(videoList, 'videos') || {};
+          const updatedVideos = { [this.videoId]: this.videoDetails, ...existingVideos };
+          await setStoreAsync(videoList, 'videos', updatedVideos);
+          await syncHome();
         } else {
           console.log(`FFmpeg exited with code ${code} and signal ${signal}`);
         }
@@ -556,8 +580,16 @@ app.whenReady().then(() => {
         this.managerCallback(this.videoId, 'delete');
 
         if (code === 0) {
-          await addMetadata(this.outputFilePath, this.videoId, 'youtube', "mp3", "COMPLETE", this.url);
+          const fileSize = fs.statSync(this.outputFilePath).size; // Get file size in bytes
+          const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2); // Convert bytes to megabytes
+
+          await addMetadata(this.outputFilePath, this.videoId, 'youtube', "mp3", "COMPLETE", this.url, fileSizeMB);
           mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: true });
+
+          const existingVideos = await getStoreAsync(videoList, 'videos') || {};
+          const updatedVideos = { [this.videoId]: this.videoDetails, ...existingVideos };
+          await setStoreAsync(videoList, 'videos', updatedVideos);
+          await syncHome();
         } else {
           console.log(`FFmpeg exited with code ${code} and signal ${signal}`);
         }
@@ -605,34 +637,38 @@ app.whenReady().then(() => {
     }
 
     async stop() {
-      if (!this.isDownloading) {
-        console.log(`No active download to stop for video ID ${this.videoId}.`);
-        return;
+      // if (!this.isDownloading) {
+      //   console.log(`No active download to stop for video ID ${this.videoId}.`);
+      //   return;
+      // }
+      try {
+        console.log(`Stopping download for: ${this.videoId}`);
+        this.isDownloading = false;
+        // Clean up resources here
+        this.ffmpegProcess.stdio[3].end();
+        this.ffmpegProcess.stdio[4].end();
+        this.videoPausable.destroy();
+        this.audioPausable.destroy();
+        this.managerCallback(this.videoId, 'delete');
+
+        setTimeout(() => {
+          if (fs.existsSync(this.outputFilePath)) {
+            fs.unlinkSync(this.outputFilePath);
+            console.log('File successfully deleted post-stop');
+          }
+        }, 3000);
+
+        // Update the video list in the store
+        mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: false });
+        const existingVideos = await getStoreAsync(videoList, 'videos') || {};
+        if (existingVideos.hasOwnProperty(this.videoId)) {
+          delete existingVideos[this.videoId];
+          await setStoreAsync(videoList, 'videos', existingVideos);
+          await syncHome();
+        };
+      } catch (error) {
+        console.log("Error Stop: ", error);
       }
-      console.log(`Stopping download for: ${this.videoId}`);
-      this.isDownloading = false;
-      // Clean up resources here
-      this.ffmpegProcess.stdio[3].end();
-      this.ffmpegProcess.stdio[4].end();
-      this.videoPausable.destroy();
-      this.audioPausable.destroy();
-      this.managerCallback(this.videoId, 'delete');
-
-      setTimeout(() => {
-        if (fs.existsSync(this.outputFilePath)) {
-          fs.unlinkSync(this.outputFilePath);
-          console.log('File successfully deleted post-stop');
-        }
-      }, 3000);
-
-      // Update the video list in the store
-      mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: false });
-      const existingVideos = await getStoreAsync(videoList, 'videos') || {};
-      if (existingVideos.hasOwnProperty(this.videoId)) {
-        delete existingVideos[this.videoId];
-        await setStoreAsync(videoList, 'videos', existingVideos);
-        await syncHome();
-      };
     }
   }
 
@@ -671,9 +707,9 @@ app.whenReady().then(() => {
       this.dl = new DownloaderHelper(this.dataurl, path.dirname(this.outputFilePath), this.options);
 
       this.dl
-        .on('download', async() => {
+        .on('download', async () => {
           console.log('Download started')
-          
+
           mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: false });
           const existingVideos = await getStoreAsync(videoList, 'videos') || {};
           const updatedVideos = { [this.videoId]: this.videoDetails, ...existingVideos };
@@ -692,8 +728,17 @@ app.whenReady().then(() => {
           console.log('Download completed');
           this.isDownloading = false;
           this.managerCallback(this.videoId, 'delete');
-          await addMetadata(this.outputFilePath, this.videoId, 'tiktok', this.format, "COMPLETE", this.dataurl);
+
+          const fileSize = fs.statSync(this.outputFilePath).size; // Get file size in bytes
+          const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2); // Convert bytes to megabytes
+
+          await addMetadata(this.outputFilePath, this.videoId, 'tiktok', this.format, "COMPLETE", this.dataurl, fileSizeMB);
           mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: true });
+
+          const existingVideos = await getStoreAsync(videoList, 'videos') || {};
+          const updatedVideos = { [this.videoId]: this.videoDetails, ...existingVideos };
+          await setStoreAsync(videoList, 'videos', updatedVideos);
+          await syncHome();
         })
         .on('error', (err) => {
           console.error(`Download failed: ${err.message}`);
@@ -736,22 +781,26 @@ app.whenReady().then(() => {
     }
 
     async stop() {
-      if (!this.isDownloading) {
-        console.log(`No active download to stop for video ID ${this.videoId}.`);
-        return;
-      }
-      console.log(`Stopping download for: ${this.videoId}`);
-      this.dl.stop();
-      this.isDownloading = false;
+      // if (!this.isDownloading) {
+      //   console.log(`No active download to stop for video ID ${this.videoId}.`);
+      //   return;
+      // }
+      try {
+        console.log(`Stopping download for: ${this.videoId}`);
+        this.dl.stop();
+        this.isDownloading = false;
 
-      // Update the video list in the store
-      mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: false });
-      const existingVideos = await getStoreAsync(videoList, 'videos') || {};
-      if (existingVideos.hasOwnProperty(this.videoId)) {
-        delete existingVideos[this.videoId];
-        await setStoreAsync(videoList, 'videos', existingVideos);
-        await syncHome();
-      };
+        // Update the video list in the store
+        mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: false });
+        const existingVideos = await getStoreAsync(videoList, 'videos') || {};
+        if (existingVideos.hasOwnProperty(this.videoId)) {
+          delete existingVideos[this.videoId];
+          await setStoreAsync(videoList, 'videos', existingVideos);
+          await syncHome();
+        };
+      } catch (error) {
+        console.log("Error Stop: ", error);
+      }
     }
   }
 
@@ -773,7 +822,18 @@ app.whenReady().then(() => {
       if (this.format !== "mp4") {
         console.log("Unsupported format: " + this.format);
         this.managerCallback(this.videoId, 'delete');
-        return;  // Early exit if the format is unsupported
+        return new Promise((resolve) => {
+          const options = {
+            type: 'error',
+            title: 'Unsupported Format',
+            message: 'MP3 Format is Unsupported'
+          };
+
+          dialog.showMessageBox(mainWindow, options).then(result => {
+            resolve(result.response === 0); // Resolve to true if 'Yes' (button index 0) was clicked
+          });
+        });
+        // return;  // Early exit if the format is unsupported
       }
       this.isDownloading = true;
       console.log(`Starting download for: ${this.videoId} - Format: ${this.format}`);
@@ -807,8 +867,17 @@ app.whenReady().then(() => {
           console.log('Download completed');
           this.isDownloading = false;
           this.managerCallback(this.videoId, 'delete');
-          await addMetadata(this.outputFilePath, this.videoId, 'tiktok', this.format, "COMPLETE", this.dataurl);
+
+          const fileSize = fs.statSync(this.outputFilePath).size; // Get file size in bytes
+          const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2); // Convert bytes to megabytes
+
+          await addMetadata(this.outputFilePath, this.videoId, 'tiktok', this.format, "COMPLETE", this.dataurl, fileSizeMB);
           mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: true });
+
+          const existingVideos = await getStoreAsync(videoList, 'videos') || {};
+          const updatedVideos = { [this.videoId]: this.videoDetails, ...existingVideos };
+          await setStoreAsync(videoList, 'videos', updatedVideos);
+          await syncHome();
         })
         .on('error', (err) => {
           console.error(`Download failed: ${err.message}`);
@@ -852,22 +921,26 @@ app.whenReady().then(() => {
     }
 
     async stop() {
-      if (!this.isDownloading) {
-        console.log(`No active download to stop for video ID ${this.videoId}.`);
-        return;
-      }
-      console.log(`Stopping download for: ${this.videoId}`);
-      this.dl.stop();
-      this.isDownloading = false;
+      // if (!this.isDownloading) {
+      //   console.log(`No active download to stop for video ID ${this.videoId}.`);
+      //   return;
+      // }
+      try {
+        console.log(`Stopping download for: ${this.videoId}`);
+        this.dl.stop();
+        this.isDownloading = false;
 
-      // Update the video list in the store
-      mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: false });
-      const existingVideos = await getStoreAsync(videoList, 'videos') || {};
-      if (existingVideos.hasOwnProperty(this.videoId)) {
-        delete existingVideos[this.videoId];
-        await setStoreAsync(videoList, 'videos', existingVideos);
-        await syncHome();
-      };
+        // Update the video list in the store
+        mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: false });
+        const existingVideos = await getStoreAsync(videoList, 'videos') || {};
+        if (existingVideos.hasOwnProperty(this.videoId)) {
+          delete existingVideos[this.videoId];
+          await setStoreAsync(videoList, 'videos', existingVideos);
+          await syncHome();
+        };
+      } catch (error) {
+        console.log("Error Stop: ", error);
+      }
     }
   }
 
@@ -1003,7 +1076,7 @@ app.whenReady().then(() => {
       if (response) {
         // Iterate through each video in response and check file existence
         for (const [videoId, videoDetails] of Object.entries(response)) {
-          const filePath = videoDetails.format === "mp4" ? path.join(directoryPath, `${videoId}.mp4`) : path.join(directoryPath, `Audio/${videoId}.mp3`);  // Assume .mp4, modify if necessary
+          const filePath = videoDetails.format === "mp4" ? path.join(directoryPath, `${videoDetails.id}.mp4`) : path.join(directoryPath, `Audio/${videoDetails.id}.mp3`);  // Assume .mp4, modify if necessary
 
           delete downloadProgress[videoId];
           if (fs.existsSync(filePath)) {
@@ -1012,8 +1085,8 @@ app.whenReady().then(() => {
               // console.log("metadata: ", metadata); // { format: 'mp4', videoId: 'M93w3TjzVUE', type: 'youtube' }
               if (metadata && metadata.format.tags.status === "COMPLETE") {
                 videoDetails.fileExist = true;
+                videoDetails.fileSizeMB = metadata.format.tags.size
               } else {
-                manager.manageDownloader(videoId, 'delete')
                 videoDetails.fileExist = false;
               }
             } catch (error) {
@@ -1021,7 +1094,6 @@ app.whenReady().then(() => {
               videoDetails.fileExist = false;
             }
           } else {
-            manager.manageDownloader(videoId, 'delete')
             videoDetails.fileExist = false;
           }
         }
@@ -1037,6 +1109,44 @@ app.whenReady().then(() => {
     });
   }
 
+  async function syncPlaylist() {
+    try {
+      const playlists = await getStoreAsync(playList, 'playlists');
+      if (playlists) {
+        for (const [playlistId, playlistDetails] of Object.entries(playlists)) {
+          if (playlistDetails.items) {
+            for (const [videoId, videoDetails] of Object.entries(playlistDetails.items)) {
+              const fileExtension = videoDetails.format === "mp4" ? "mp4" : "mp3";
+              const filePath = path.join(directoryPath, `${videoDetails.format === "mp4" ? "" : "Audio/"}`, `${videoDetails.id}.${fileExtension}`);
+  
+              delete downloadProgress[videoId];
+              try {
+                if (fs.existsSync(filePath)) {
+                  const metadata = await getMetadata(filePath);
+                  videoDetails.fileExist = metadata && metadata.format.tags.status === "COMPLETE";
+                  videoDetails.fileSizeMB = metadata ? parseFloat(metadata.format.tags.size) : null;
+                } else {
+                  videoDetails.fileExist = false;
+                }
+              } catch (error) {
+                console.error(`Error fetching metadata for video ${videoId}:`, error.message);
+                videoDetails.fileExist = false;
+              }
+            }
+          }
+        }
+        mainWindow.webContents.send('palylistVideos', playlists);
+        const data = { ...appInfo.store };
+        mainWindow.webContents.send('appInfo', data);
+      } else {
+        mainWindow.webContents.send('palylistVideos', {});
+      }
+    } catch (error) {
+      console.error("Error reading playlists: ", error);
+      mainWindow.webContents.send('palylistVideos', {});
+    }
+  }
+  
   ipcMain.on('downloadPlaylist', async (event, obj) => {
     console.log("Playlist URL: ", obj.url);
     if (ytdl.validateURL(obj.url)) {
@@ -1055,9 +1165,9 @@ app.whenReady().then(() => {
           // Start downloading videos in the playlist
           for (const video of info.items) {
             await new Promise((resolve) => setTimeout(resolve, 1000)); // ensure delay between downloads
-            mainWindow.webContents.send('downloadVideoPlaylist', { url: `https://www.youtube.com/watch?v=${video.id}`, quality: obj.quality });
+            mainWindow.webContents.send('downloadVideoPlaylist', { url: video.url, quality: obj.quality });
           }
-          
+
           await setStoreAsync(playList, 'playlists', updatedPlaylists);
           await getStoreAsync(playList, 'playlists').then((response) => {
             if (response) {
@@ -1083,10 +1193,30 @@ app.whenReady().then(() => {
 
   ipcMain.on('page', async (event, obj) => {
     switch (obj.page) {
+      case 'Check':
+        const rememberMe = await getStoreAsync(appInfo, 'rememberMe');
+        if (rememberMe) {
+          const username = await getStoreAsync(appInfo, 'username');
+          const password = await getStoreAsync(appInfo, 'password');
+          mainWindow.webContents.send('checkRes', { username: username, password: password, rememberMe: rememberMe });
+        } else {
+          mainWindow.webContents.send('checkRes', { username: '', password: '', rememberMe: false });
+        }
+        break;
+
       case 'Login':
         let respond = await login(obj.email, obj.password, "windows"); // Ensure device_id is passed
         if (respond.status === "success") {
-          mainWindow.webContents.send('status', "success");
+          mainWindow.webContents.send('status', { status: "success" });
+          if (obj.rememberMe) {
+            await setStoreAsync(appInfo, 'username', obj.email);
+            await setStoreAsync(appInfo, 'password', obj.password);
+            await setStoreAsync(appInfo, 'rememberMe', true);
+          } else {
+            await setStoreAsync(appInfo, 'username', '');
+            await setStoreAsync(appInfo, 'password', '');
+            await setStoreAsync(appInfo, 'rememberMe', false);
+          }
         } else {
           const options = {
             type: 'error',
@@ -1100,26 +1230,28 @@ app.whenReady().then(() => {
           };
           dialog.showMessageBox(mainWindow, options).then(result => {
             if (result.response === 0) { // User clicked 'OK'
-              mainWindow.webContents.send('status', "error");
+              mainWindow.webContents.send('status', { status: "error" });
             }
           });
         }
         break;
 
       case 'Home':
-        syncHome();
+        await syncHome();
         break;
 
       case 'PlayList':
-        await getStoreAsync(playList, 'playlists').then((response) => {
-          if (response) {
-            mainWindow.webContents.send('palylistVideos', response);
-          } else {
-            mainWindow.webContents.send('palylistVideos', {});
-          }
-        }).catch(error => {
-          console.error(`Error reading video:`, error);
-        });
+        // await getStoreAsync(playList, 'playlists').then((response) => {
+        //   console.log('playlists: ', response);
+        //   if (response) {
+        //     mainWindow.webContents.send('palylistVideos', response);
+        //   } else {
+        //     mainWindow.webContents.send('palylistVideos', {});
+        //   }
+        // }).catch(error => {
+        //   console.error(`Error reading video:`, error);
+        // });
+        await syncPlaylist()
         break;
 
       case 'Search':
@@ -1145,35 +1277,46 @@ app.whenReady().then(() => {
     }
 
     const videoId = obj.videoId;
-    const videoFilePath = path.join(directoryPath, `${videoId}.mp4`);
+
     try {
-      // Update the video list in the store
+      // Retrieve the existing videos list from the store
       const existingVideos = await getStoreAsync(videoList, 'videos') || {};
+      // Check if the video exists in the list
       if (existingVideos.hasOwnProperty(videoId)) {
+        // Determine the format and set the appropriate file path
+        let videoFilePath;
+        if (existingVideos[videoId].format === 'mp4') {
+          videoFilePath = path.join(directoryPath, `${videoId}.mp4`);
+        } else {
+          videoFilePath = path.join(directoryPath, `Audio/${videoId}.mp3`);
+        }
+
+        // Delete the video from the list
         delete existingVideos[videoId];
+
+        // Update the store with the new videos list
         await setStoreAsync(videoList, 'videos', existingVideos);
         mainWindow.webContents.send('homeVideos', existingVideos);
-      }
 
-      // Delay to ensure all streams are closed and ffmpeg has terminated
-      setTimeout(() => {
-        try {
-          if (fs.existsSync(videoFilePath)) {
-            fs.unlinkSync(videoFilePath);
-            console.log('File successfully deleted post-stop');
+        // Delay to ensure all streams are closed and ffmpeg has terminated
+        setTimeout(async () => {
+          try {
+            if (fs.existsSync(videoFilePath)) {
+              fs.unlinkSync(videoFilePath);
+              console.log('File successfully deleted');
+            }
+            mainWindow.webContents.send('downloadStopped', { videoId });
+          } catch (error) {
+            console.error('Error deleting video file:', error);
+            mainWindow.webContents.send('downloadError', { videoId, error: 'Failed to delete file' });
           }
-          mainWindow.webContents.send('downloadStopped', { videoId });
-        } catch (error) {
-          console.error('Error handling stop video:', error);
-          mainWindow.webContents.send('downloadError', { videoId, error: 'Failed to delete file after stopping' });
-        }
-      }, 1000);
+        }, 1000);
 
-      await syncHome()
-      console.log('Download stopped and video file removed for:', videoId);
+        console.log('Download stopped and video file removed for:', videoId);
+      }
     } catch (error) {
       console.error('Error handling stop video:', error);
-      mainWindow.webContents.send('downloadError', { videoId, error: 'Failed to update video list and delete file after stopping' });
+      mainWindow.webContents.send('downloadError', { videoId, error: 'Failed to update video list and delete file' });
     }
   });
 
@@ -1188,21 +1331,23 @@ app.whenReady().then(() => {
 
       const videos = await getStoreAsync(videoList, 'videos'); // Assuming 'videos' is the correct key
       if (videos) {
-        Object.keys(videos).forEach(videoId => {
-          const filePath = path.join(directoryPath, `${videoId}.mp4`);
-          setTimeout(() => {
-            try {
-              if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-                console.log('File successfully deleted post-stop');
+        for (let [videoId, details] of Object.entries(videos)) {
+          if (details.format === 'mp4' && details.type !== 'playlist') {
+            const filePath = path.join(directoryPath, `${videoId}.mp4`);
+            setTimeout(() => {
+              try {
+                if (fs.existsSync(filePath)) {
+                  fs.unlinkSync(filePath);
+                  console.log('File successfully deleted post-stop');
+                }
+                console.log(`Deleted: ${filePath}`);
+                videoList.delete(`videos.${videoId}`)
+              } catch (error) {
+                console.log(`File not found, cannot delete: ${filePath}: ${error}`);
               }
-              console.log(`Deleted: ${filePath}`);
-              videoList.delete(`videos.${videoId}`)
-            } catch (error) {
-              console.log(`File not found, cannot delete: ${filePath}: ${error}`);
-            }
-          }, 300);  // Ensure FFmpeg has released the file
-        });
+            }, 300);  // Ensure FFmpeg has released the file
+          }
+        }
       }
       console.log('All videos deleted and store cleared.');
       mainWindow.webContents.send('allVideosDeleted'); // Notify renderer process if needed
@@ -1223,21 +1368,23 @@ app.whenReady().then(() => {
 
       const videos = await getStoreAsync(videoList, 'videos'); // Assuming 'videos' is the correct key
       if (videos) {
-        Object.keys(videos).forEach(videoId => {
-          const filePath = path.join(directoryPath, `Audio/${videoId}.mp3`);
-          setTimeout(() => {
-            try {
-              if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-                console.log('File successfully deleted post-stop');
+        for (let [videoId, details] of Object.entries(videos)) {
+          if (details.format === 'mp3') {
+            const filePath = path.join(directoryPath, `Audio/${videoId}.mp3`);
+            setTimeout(() => {
+              try {
+                if (fs.existsSync(filePath)) {
+                  fs.unlinkSync(filePath);
+                  console.log('File successfully deleted post-stop');
+                }
+                console.log(`Deleted: ${filePath}`);
+                videoList.delete(`videos.${videoId}`)
+              } catch (error) {
+                console.log(`File not found, cannot delete: ${filePath}: ${error}`);
               }
-              console.log(`Deleted: ${filePath}`);
-              videoList.delete(`videos.${videoId}`)
-            } catch (error) {
-              console.log(`File not found, cannot delete: ${filePath}: ${error}`);
-            }
-          }, 300);  // Ensure FFmpeg has released the file
-        });
+            }, 300);  // Ensure FFmpeg has released the file
+          }
+        }
       }
       console.log('All videos deleted and store cleared.');
       mainWindow.webContents.send('allVideosDeleted'); // Notify renderer process if needed
@@ -1345,7 +1492,7 @@ app.whenReady().then(() => {
     }
   });
 
-  // Todo
+
   ipcMain.on('logout', async (event, obj) => {
     // Show confirmation dialog before proceeding
     const confirm = await confirmLogout(mainWindow);
@@ -1353,6 +1500,11 @@ app.whenReady().then(() => {
       console.log('Deletion cancelled by the user.');
       return; // Exit if the user cancels
     }
+
+    await setStoreAsync(appInfo, 'username', '');
+    await setStoreAsync(appInfo, 'password', '');
+    await setStoreAsync(appInfo, 'rememberMe', false);
+    mainWindow.webContents.send('confirmLogout');
   });
 
   ipcMain.on('setCookie', async (event, { cookie }) => {

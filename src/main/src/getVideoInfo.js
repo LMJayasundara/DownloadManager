@@ -6,11 +6,13 @@ export async function YoutubeVideoDetails(url, format, quality) {
   try {
     const info = await ytdl.getInfo(url);
     const details = {
-      id: info.videoDetails.videoId,
+      id: info.videoDetails.videoId + format,
       title: info.videoDetails.title,
       url: url,
       format: format,
       quality: quality,
+      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      type: 'youtube',
       author: info.videoDetails.author.name,
       description: info.videoDetails.description,
       tags: info.videoDetails.keywords,
@@ -28,11 +30,13 @@ export async function TikTokVideoDetails(url, format, quality, defaultAuthor, de
   try {
     const info = await v1(url);
     return {
-      id: info.id.toString(),
+      id: info.id.toString() + format,
       title: info.title,
       url: url,
       format: format,
       quality: quality,
+      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      type: 'tiktok',
       author: info.author.name,
       description: '',
       tags: [],
@@ -57,11 +61,13 @@ function urlHash(url) {
 
 export function GenericVideoDetails(url, format, quality, defaultAuthor, defaultThumbnail) {
   return {
-    id: urlHash(url),
+    id: urlHash(url) + format,
     title: 'Generic Video',
     url: url,
     format: format,
     quality: quality,
+    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    type: 'generic',
     author: 'Unknown',
     description: '',
     tags: [],
@@ -98,10 +104,12 @@ export async function PlaylistVideoDetails(playlistURL) {
     const itemsWithDetailsPromises = details.items.map(async (item) => {
       const { description, tags, authorPhoto } = await getVideoDescription(item.id);
       return {
-        id: item.id,
+        id: item.id + "mp4",
         title: item.title,
         format: "mp4",
         url: item.shortUrl,
+        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+        type: 'playlist',
         author: item.author.name,
         description: description,
         tags: tags,

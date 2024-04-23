@@ -1,4 +1,5 @@
-import { Route, Routes, Navigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import { Content, RootLayout, Sidebar } from "./components";
 import SidebarButton from "./components/SidebarButton";
 
@@ -12,8 +13,18 @@ import About from "./pages/About";
 import Album from "./pages/Album";
 import Player from "./pages/Player";
 import PlayListPlayer from "./pages/PlayListPlayer";
+import { useData } from "./DownloadContext";
 
 function App() {
+  const { logoutStatus } = useData();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (logoutStatus) {
+      navigate('/'); // Navigate to the root if logoutStatus is true
+    }
+  }, [logoutStatus, navigate]);
+
   return (
     <Routes>
       {/* Directly render the Login component for the root path */}

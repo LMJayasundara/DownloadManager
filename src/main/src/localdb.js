@@ -6,7 +6,11 @@ export const appInfo = new Store({
   name: 'appInfo',
   defaults: {
     cookie: '',  // Default value for cookie
-    playlistInterval: 5  // Default value for playlistInterval
+    playlistInterval: 5,  // Default value for playlistInterval
+    rememberMe: false,
+    username: '',
+    password: '',
+    deviceId: ''
   }
 });
 

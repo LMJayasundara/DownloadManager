@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import LoginBackground from "../assets/login-background.jpg";
 import AppLogo from "../assets/icon.png"; // Make sure this points to your logo's path
+import { useData } from '../DownloadContext';
 const ipcRenderer = electron.ipcRenderer;
 
 // Email validation function
@@ -11,11 +12,21 @@ function isValidEmail(email) {
 }
 
 function Login() {
+  const { checkRes, status } = useData();
   const navigate = useNavigate();
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    ipcRenderer.send('page', { page: 'Check' });
+  
+    return () => {
+      ipcRenderer.removeAllListeners('page');
+    };
+  }, []);
 
   function login() {
     const email = document.getElementById('email').value;
@@ -35,27 +46,30 @@ function Login() {
       return;
     }
 
-    ipcRenderer.send('page', { page: 'Login', email: email, password: password });
+    ipcRenderer.send('page', { page: 'Login', email: email, password: password, rememberMe: rememberMe });
   }
 
   useEffect(() => {
-    ipcRenderer.on('status', (data) => {
-      // console.log(data);
-      if(data == "success") {
-        navigate("/home");
-      } else{
-        // Reset error messages
-        setEmailError('');
-        setPasswordError('');
-        setEmail('');
-        setPassword('')
-      }
-    });
-  
-    return () => {
-      ipcRenderer.removeAllListeners('status');
-    };
-  }, []);
+    setEmail(checkRes.username);
+    setPassword(checkRes.password);
+    setRememberMe(checkRes.rememberMe);
+  }, [checkRes, navigate]);
+
+  useEffect(() => {
+    if(status.status == "success") {
+      navigate("/home");
+    } else {
+      setEmailError('');
+      setPasswordError('');
+      setEmail('');
+      setPassword('')
+    }
+
+  }, [status]);
+
+  function handleRememberMeChange(e) {
+    setRememberMe(e.target.checked);
+  }
 
   // Update email state and clear its error message
   function handleEmailChange(e) {
@@ -83,25 +97,6 @@ function Login() {
         <h1 className='text-2xl font-bold text-gray-800'>Login Play Downloader</h1>
 
         <div className='w-full max-w-xs'>
-          {/* test */}
-          {/* <form className='space-y-4'>
-            <input
-              id="email"
-              type="email"
-              placeholder="Email"
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-            />
-            <input
-              id="password"
-              type="password"
-              placeholder="Password"
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-            />
-            <button type="button" onClick={login} className='bg-blue-500 text-white w-full px-4 py-2 rounded hover:bg-blue-600 focus:outline-none'>
-              Login
-            </button>
-          </form> */}
-
           <form className='space-y-4' onSubmit={(e) => e.preventDefault()}>
             <input
               id="email"
@@ -121,7 +116,26 @@ function Login() {
               className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
             />
             {passwordError && <div className="text-red-500">{passwordError}</div>}
-            <button type="button" onClick={login} className='bg-blue-500 text-white w-full px-4 py-2 rounded hover:bg-blue-600 focus:outline-none'>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={handleRememberMeChange}
+                className="hidden" // This hides the actual checkbox
+              />
+              <label htmlFor="rememberMe" className="flex items-center cursor-pointer">
+                <span className={`w-4 h-4 inline-block mr-2 rounded border-2 flex justify-center items-center ${rememberMe ? 'bg-blue-500 border-blue-500' : 'border-gray-400'}`}>
+                  {rememberMe && (
+                    <svg className="w-3 h-3 text-white fill-current" viewBox="0 0 20 20">
+                      <path d="M7.629 14.571L3.149 10.192l1.414-1.414 3.066 3.058 5.651-5.651 1.414 1.414-7.065 7.072z" />
+                    </svg>
+                  )}
+                </span>
+                Remember me
+              </label>
+            </div>
+            <button type="submit" onClick={login} className='bg-blue-500 text-white w-full px-4 py-2 rounded hover:bg-blue-600 focus:outline-none'>
               Login
             </button>
           </form>
