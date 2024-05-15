@@ -5,12 +5,14 @@ export const playList = new Store({ name: 'playList' });
 export const appInfo = new Store({
   name: 'appInfo',
   defaults: {
-    cookie: '',  // Default value for cookie
+    cookie: '[]',  // Default value for cookie
     playlistInterval: 5,  // Default value for playlistInterval
     rememberMe: false,
     username: '',
     password: '',
-    deviceId: ''
+    deviceId: '',
+    license: '',
+    userId: ''
   }
 });
 

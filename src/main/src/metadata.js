@@ -19,7 +19,7 @@ export const addMetadata = async (filePath, videoId, type, format, status, url, 
     `-metadata`, `size=${size}`
   ];
 
-  if (format === "mp4") {
+  if (format === "mp4" || format === "flv" || format === "mkv" || format === "3gp") {
     ffmpegArgs.push('-c', 'copy');
     ffmpegArgs.push(metadataFilePath); // Output file
   } else if (format === "mp3") {
@@ -85,6 +85,7 @@ export function getMetadata(filePath) {
       } else {
         try {
           const parsedData = JSON.parse(output); // Parse the JSON output
+          console.log(parsedData);
           resolve(parsedData);
         } catch (e) {
           // reject(new Error('Failed to parse ffprobe output: ' + e.message));

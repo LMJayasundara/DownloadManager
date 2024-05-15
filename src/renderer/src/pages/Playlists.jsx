@@ -4,6 +4,7 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { FaEllipsisV } from 'react-icons/fa';
 import { useData } from '../DownloadContext';
+import { BarLoader } from 'react-spinners';
 const ipcRenderer = electron.ipcRenderer;
 
 const useOutsideAlerter = (ref, onClose) => {
@@ -21,7 +22,7 @@ const useOutsideAlerter = (ref, onClose) => {
   }, [ref, onClose]);
 };
 
-const VideoCard = ({ video, index }) => {
+const VideoCard = ({ video, index, setDownloadStatus}) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
@@ -31,6 +32,12 @@ const VideoCard = ({ video, index }) => {
   const goToPlayListAlbum = (video) => {
     navigate('/album', { state: { video } });
   };
+
+  useEffect(() => {
+    if (video) {
+      setDownloadStatus(false);  // Correctly use the passed prop to update the downloading status
+    }
+  }, [video]);
 
   return (
     <div key={index}
@@ -77,13 +84,18 @@ const VideoCard = ({ video, index }) => {
       </button>
 
       {/* Options Menu */}
-      <div ref={menuRef}>
+      {/* <div ref={menuRef}>
         {menuVisible && (
           <div className="absolute right-2 bottom-10 bg-white rounded-md shadow-lg">
             <ul>
-              {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => console.log("Play Video")}>Play All</li> */}
-              {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleDeletePlaylist}>Delete</li> */}
-
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={(e) => {
+                  e.stopPropagation(); // Stop event propagation to prevent parent onClick from triggering
+                  navigate('/playlistplayer', { state: { video: video } });
+              }}>
+                  Play All
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Repeated</li>
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Shuffled</li>
               <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" role="button"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -92,7 +104,43 @@ const VideoCard = ({ video, index }) => {
             </ul>
           </div>
         )}
+      </div> */}
+
+      {/* Options Menu */}
+      <div ref={menuRef}>
+        {menuVisible && (
+          <div className="absolute right-2 bottom-10 bg-white rounded-md shadow-lg">
+            <ul>
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={(e) => {
+                e.stopPropagation(); // Stop event propagation to prevent parent onClick from triggering
+                navigate('/playlistplayer', { state: { video: video, mode: 'normal' } }); // Passing mode as state
+              }}>
+                Play All
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={(e) => {
+                e.stopPropagation(); // Stop event propagation
+                navigate('/playlistplayer', { state: { video: video, mode: 'repeat' } }); // Navigate and pass mode
+              }}>
+                Repeat
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={(e) => {
+                e.stopPropagation(); // Stop event propagation
+                navigate('/playlistplayer', { state: { video: video, mode: 'shuffle' } }); // Navigate and pass mode
+              }}>
+                Shuffle
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" role="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  ipcRenderer.send('deletePlaylist', { playlistId: video.id });
+                }}>
+                Delete
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
+
     </div>
   );
 };
@@ -102,13 +150,18 @@ function Playlists() {
   const [videoQuality, setVideoQuality] = useState('720p');
   const [renderedVideos, setRenderedVideos] = useState(null);
   const { playlists, loadingPlaylists } = useData();
-  
+  const [isDownloading, setIsDownloading] = useState(false);
+
   useEffect(() => {
     ipcRenderer.send('page', { page: 'PlayList' });
     return () => {
       ipcRenderer.removeAllListeners('page');
     };
   }, []);
+
+  const setDownloadStatus = (status) => {
+    setIsDownloading(status);
+  };
 
   const renderSkeletonVideos = () => {
     return Array.from({ length: Object.keys(playlists).length ? Object.keys(playlists).length : 1 }).map((_, index) => (
@@ -119,13 +172,13 @@ function Playlists() {
       </div>
     ));
   };
-  
+
   useEffect(() => {
     if (!loadingPlaylists) {
       function renderPlaylists() {
         if (playlists && typeof playlists === 'object') {
           return Object.values(playlists).map((playlist, index) => (
-            <VideoCard key={index} video={playlist} index={index} />
+            <VideoCard key={index} video={playlist} index={index} setDownloadStatus={setDownloadStatus}/>
           ));
         }
         return null;
@@ -138,6 +191,7 @@ function Playlists() {
 
   const sendURL = () => {
     if (playlistURL.trim() !== '') { // Check if the playlistURL is not empty
+      setDownloadStatus(true);
       ipcRenderer.send('downloadPlaylist', { url: playlistURL, quality: videoQuality }); // Send the trimmed playlistURL
       setVideoURL(''); // Clear the input field by setting playlistURL state to an empty string
     }
@@ -145,15 +199,15 @@ function Playlists() {
 
   return (
     <div className='flex flex-col h-screen h-full items-center justify-center p-4 border-2 rounded-lg w-full'>
-      <header className='w-full flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0'>
+      <header className='w-full flex flex-row items-center mb-4'>
         <input
           type="text"
           value={playlistURL} // Bind input value to state
           onChange={(e) => setVideoURL(e.target.value)}
           placeholder="Enter Playlist URL to Download..."
-          className="px-4 py-2 w-full border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 md:max-w-lg"
+          className="flex-grow px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
         />
-        <div className="flex space-x-2">
+        <div className="flex items-center space-x-2 ml-4">
           <select
             value={videoQuality}
             onChange={(e) => setVideoQuality(e.target.value)}
@@ -173,8 +227,9 @@ function Playlists() {
         </div>
       </header>
 
+      {isDownloading && <BarLoader color="#0000FF" loading={isDownloading} width="100%" />}
       <div className='w-full border-t-2 border-gray-200 mb-4'></div>
-      
+
       <main className='w-full flex-grow overflow-auto p-4'>
         {loadingPlaylists ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -188,7 +243,7 @@ function Playlists() {
       </main>
 
       <footer className='w-full text-center pt-4'>
-        <span className='text-gray-600'>{Object.keys(playlists).length} Playlists</span>
+        <span className='text-gray-600'>{Object.keys(playlists).length} Playlist(s)</span>
       </footer>
 
     </div>

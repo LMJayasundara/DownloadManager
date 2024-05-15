@@ -5,9 +5,10 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import { FaEllipsisV, FaPauseCircle, FaStopCircle, FaPlay } from 'react-icons/fa';
 import { MdDownloadForOffline } from "react-icons/md";
 import { useData } from '../DownloadContext';
+import { BarLoader } from 'react-spinners';
 const ipcRenderer = electron.ipcRenderer;
 
-const VideoCard = ({ video, index }) => {
+const VideoCard = ({ video, index, setDownloadStatus }) => {
   const { downloadProgress, downloadComplete } = useData();
   const progress = downloadProgress[video.id];
   const completed = downloadComplete[video.id];
@@ -59,6 +60,12 @@ const VideoCard = ({ video, index }) => {
     ipcRenderer.send('downloadVideo', { url: video.url, quality: video.quality, format: video.format }); // Ensure these details are correct as per your requirements
   };
 
+  useEffect(() => {
+    if (progress >= 0 || completed) {
+      setDownloadStatus(false);  // Correctly use the passed prop to update the downloading status
+    }
+  }, [progress, completed, setDownloadStatus]);
+
   return (
     <div key={index}
       className="relative bg-white rounded-lg bg-opacity-10 backdrop-filter backdrop-blur-lg space-y-4 w-full transition-transform duration-200 hover:scale-105 hover:shadow-lg border border-gray-300 group"
@@ -72,7 +79,7 @@ const VideoCard = ({ video, index }) => {
 
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="absolute bottom-0 p-4 w-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <p>{video.format === "mp4" ? "Video": "Audio"}</p>
+          <p>{video.format !== "mp3" ? "Video": "Audio"}</p>
         </div>
 
         {progress && !completed && (
@@ -145,6 +152,7 @@ function Home() {
   const { videos, loading } = useData();
   const [videoURL, setVideoURL] = useState('');
   const [renderedVideos, setRenderedVideos] = useState(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     ipcRenderer.send('page', { page: 'Home' });
@@ -153,8 +161,13 @@ function Home() {
     };
   }, []);
 
+  const setDownloadStatus = (status) => {
+    setIsDownloading(status);
+  };
+
   const sendURL = () => {
     if (videoURL.trim() !== '') { // Check if the videoURL is not empty
+      setDownloadStatus(true);
       ipcRenderer.send('downloadVideo', { url: videoURL, quality: videoQuality, format: downloadFormat }); // Send the trimmed videoURL
       setVideoURL(''); // Clear the input field by setting videoURL state to an empty string
     }
@@ -176,7 +189,7 @@ function Home() {
       function renderVideos() {
         if (videos && typeof videos === 'object') {
           return Object.values(videos).map((video, index) => (
-            <VideoCard key={index} video={video} index={index} />
+            <VideoCard key={index} video={video} index={index} setDownloadStatus={setDownloadStatus} />
           ));
         }
         return null;
@@ -189,15 +202,15 @@ function Home() {
   return (
     <div className='flex flex-col h-screen h-full items-center justify-center p-4 border-2 rounded-lg w-full'>
 
-      <header className='w-full flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0'>
+      <header className='w-full flex flex-row items-center mb-4'>
         <input
           type="text"
           value={videoURL} // Bind input value to state
           onChange={(e) => setVideoURL(e.target.value)}
           placeholder="Enter Video URL to Download..."
-          className="px-4 py-2 w-full border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 md:max-w-lg"
+          className="flex-grow px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
         />
-        <div className="flex space-x-2">
+        <div className="flex items-center space-x-2 ml-4">
           <select
             value={videoQuality}
             onChange={(e) => setVideoQuality(e.target.value)}
@@ -226,6 +239,7 @@ function Home() {
         </div>
       </header>
 
+      {isDownloading && <BarLoader color="#0000FF" loading={isDownloading} width="100%" />}
       <div className='w-full border-t-2 border-gray-200 mb-4'></div>
       
       <main className='w-full flex-grow overflow-auto p-4'>
@@ -241,7 +255,7 @@ function Home() {
       </main>
 
       <footer className='w-full text-center pt-4'>
-        <span className='text-gray-600'>{Object.keys(videos).length} Videos</span>
+        <span className='text-gray-600'>{Object.keys(videos).length} Media</span>
       </footer>
 
     </div>

@@ -10,10 +10,12 @@ export const DataProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [playlists, setPlaylists] = useState({});
     const [loadingPlaylists, setLoadingPlaylists] = useState(true);
+    // const [loadingPlaylistsAlbum, setLoadingPlaylistsAlbum] = useState(true);
     const [appInfo, setAppInfo] = useState({});
     const [checkRes, setCheckRes] = useState({});
     const [status, setStatus] = useState({});
     const [logoutStatus, setLogoutStatus] = useState(false);
+    const [aboutApp, setAboutApp] = useState({});
 
 
     useEffect(() => {
@@ -64,6 +66,18 @@ export const DataProvider = ({ children }) => {
             setLogoutStatus(true);
         });
 
+        ipcRenderer.on('aboutApp', (data) => {
+            setAboutApp(data);
+        });
+
+        // ipcRenderer.on('palylistAlbumVideos', (data) => {
+        //     setLoadingPlaylistsAlbum(true);
+        //     setPlaylists(data)
+        //     setTimeout(() => {
+        //         setLoadingPlaylistsAlbum(false);
+        //     }, 1000);
+        // });
+
         // Clean up the listener when the context provider is unmounted
         return () => {
             ipcRenderer.removeAllListeners('downloadProgress');
@@ -75,11 +89,12 @@ export const DataProvider = ({ children }) => {
             ipcRenderer.removeAllListeners('checkRes');
             ipcRenderer.removeAllListeners('status');
             ipcRenderer.removeAllListeners('confirmLogout');
+            ipcRenderer.removeAllListeners('aboutApp');
         };
     }, []);
 
     return (
-        <DataContext.Provider value={{ downloadProgress, downloadComplete, videos, loading, playlists, loadingPlaylists, appInfo, checkRes, status, logoutStatus }}>
+        <DataContext.Provider value={{ downloadProgress, downloadComplete, videos, loading, playlists, loadingPlaylists, appInfo, checkRes, status, logoutStatus, aboutApp }}>
             {children}
         </DataContext.Provider>
     );

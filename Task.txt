@@ -1,6 +1,8 @@
 #######################
 CLIENT TODO:
 #######################
+(1) I want the extension zip files bundled with the software. On the settings page, there will be a "Browser Extension" button. It will open up the extensions folder. Users can then install extensions manually from there...
+
 (12) I want to use the browser extensions to copy the youtube cookie. Add the "Copy Cookie" button to it. Users can then paste the copied cookie into the setting page. It can download private videos at the moment, but I want it to download private playlists too.
 
 (23) When the "Download Video" button is clicked in the browser extension, the PlayDownloader app should be launched (if not yet launched). The window should be focused on and maximized (if already launched or in the system tray). 
@@ -14,8 +16,6 @@ CLIENT TODO:
 #######################
 CLIENT DONE:
 #######################
-(1) I want the extension zip files bundled with the software. On the settings page, there will be a "Browser Extension" button. It will open up the extensions folder. Users can then install extensions manually from there...
-
 (2) The icon/image in the installer is a bit grainy/blurry. I want to make it look better. Check screenshot: blur.png
 
 (3) The tag for the "Quit" button in the system tray is written as "   Quit" instead of "Quit". Also, when you right-click in the fields, the items have similar spaces in front of them. Check screenshots: 1.png and 2.png . I want to remove the empty spaces.
@@ -80,8 +80,7 @@ Contact Us => linked to: https://playdownloader.com/contact.html
 #######################
 My TODO:
 #######################
-- save user credentials locally
-- Setting up a simple electron update server
+
 
 
 #######################
@@ -98,6 +97,8 @@ My DONE:
 - handle delete playlist and it videos - done
 - setup playlist video quality - done
 - mp3 download - done
+- save user credentials locally
+- Setting up a simple electron update server
 
 #######################
 mysql:
@@ -118,8 +119,25 @@ Server:
   playdwl => PTf#x6elQfVk
 
 
+#######################
+My Suggestions:
+#######################
+- Playlist Player
+- Mp3, Mp4 Filter
+- Set download location
+- Set download floder structure
+- File save with their name
+- Add loding indicator when on going progress like loging. initaialte downloading
+- When deleting video shoud not delete playlist videos
+- in Home shoud show videos only not in playlist videos in playlist
+- add sync and backup buton to the setting page
 
+#######################
+Description:
+#######################
+🛠️ Excited to share a project I've been working on: a custom Download Manager built using ElectronJS, Vite, and React. This tool allows users to efficiently manage downloads of YouTube and TikTok videos, supporting formats like MP4 and MP3. Key features include the ability to pause, resume, and stop downloads, auto-resume capabilities for deleted files, and the option to download entire YouTube playlists. The user-friendly interface also displays downloaded videos and playlists, includes a search function, and automatically updates to the latest version.
 
+I developed this to streamline the video download process and ensure easy management directly from your desktop. Proud of what we've achieved and excited for what comes next!
 
 
 

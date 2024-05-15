@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import LoginBackground from "../assets/login-background.jpg";
 import AppLogo from "../assets/icon.png"; // Make sure this points to your logo's path
 import { useData } from '../DownloadContext';
+import { PropagateLoader } from 'react-spinners';
 const ipcRenderer = electron.ipcRenderer;
 
 // Email validation function
@@ -18,7 +19,8 @@ function Login() {
   const [passwordError, setPasswordError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
+  const [loading, setLoading] = useState(false); // New loading state
 
   useEffect(() => {
     ipcRenderer.send('page', { page: 'Check' });
@@ -29,6 +31,7 @@ function Login() {
   }, []);
 
   function login() {
+    setLoading(true); // Set loading to true when login starts
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
@@ -38,11 +41,13 @@ function Login() {
 
     if (!isValidEmail(email)) {
       setEmailError("Please enter a valid email address.");
+      setLoading(false); // Reset loading if there's an error
       return;
     }
 
     if (password.trim() === '') {
       setPasswordError("Password cannot be empty.");
+      setLoading(false); // Reset loading if there's an error
       return;
     }
 
@@ -50,9 +55,12 @@ function Login() {
   }
 
   useEffect(() => {
+    if(checkRes.username !== "" && checkRes.password !== ""){
+      setLoading(true);
+    }
     setEmail(checkRes.username);
     setPassword(checkRes.password);
-    setRememberMe(checkRes.rememberMe);
+    // setRememberMe(checkRes.rememberMe);
   }, [checkRes, navigate]);
 
   useEffect(() => {
@@ -64,7 +72,7 @@ function Login() {
       setEmail('');
       setPassword('')
     }
-
+    setLoading(false); // Reset loading if there's an error
   }, [status]);
 
   function handleRememberMeChange(e) {
@@ -94,7 +102,7 @@ function Login() {
         <img src={AppLogo} alt="App Logo" className="w-32 h-32" /> {/* Adjust size as needed */}
 
         {/* Login Text */}
-        <h1 className='text-2xl font-bold text-gray-800'>Login Play Downloader</h1>
+        <h1 className='text-2xl font-bold text-gray-800'>Login to Play Downloader</h1>
 
         <div className='w-full max-w-xs'>
           <form className='space-y-4' onSubmit={(e) => e.preventDefault()}>
@@ -112,11 +120,11 @@ function Login() {
               type="password"
               value={password}
               onChange={handlePasswordChange}
-              placeholder="Password"
+              placeholder="Key"
               className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
             />
             {passwordError && <div className="text-red-500">{passwordError}</div>}
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <input
                 type="checkbox"
                 id="rememberMe"
@@ -134,10 +142,14 @@ function Login() {
                 </span>
                 Remember me
               </label>
-            </div>
+            </div> */}
             <button type="submit" onClick={login} className='bg-blue-500 text-white w-full px-4 py-2 rounded hover:bg-blue-600 focus:outline-none'>
               Login
             </button>
+            {/* PropagateLoader below the login button */}
+            <div className="flex justify-center mt-2">
+              <PropagateLoader color="#3498db" loading={loading} size={15} />
+            </div>
           </form>
 
         </div>

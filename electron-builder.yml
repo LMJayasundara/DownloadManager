@@ -1,7 +1,11 @@
-appId: com.electron.app
-productName: play-downloader
+appId: com.playdownloader.app
+productName: Play Downloader
 directories:
   buildResources: build
+# extraFiles:
+#   - from: "./node_modules/handbrake-js/bin"
+#     to: "resources/bin"  # This is where they will be placed in the app's resources directory
+#     filter: ["**/*"]
 files:
   - '!**/.vscode/*'
   - '!src/*'
@@ -11,9 +15,11 @@ files:
 asarUnpack:
   - resources/**
   - 'node_modules/ffmpeg-static/*'
+  # - 'node_modules/fluent-ffmpeg/*'
+  # - 'node_modules/handbrake-js/*'
   # - 'node_modules/ffprobe-static/bin/${os}/${arch}/*'
 win:
-  executableName: play-downloader
+  executableName: Play Downloader
 nsis:
   oneClick: false
   artifactName: ${name}-${version}-setup.${ext}
@@ -37,7 +43,7 @@ linux:
     - AppImage
     - snap
     - deb
-  maintainer: electronjs.org
+  maintainer: PlayDownloader.com
   category: Utility
 appImage:
   artifactName: ${name}-${version}.${ext}

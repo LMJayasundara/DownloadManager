@@ -1,0 +1,26 @@
+{
+    "manifest_version": 3,
+    "name": "Playdownloader",
+    "version": "1.0",
+    "description": "Communicate with Electron App",
+    "icons": {
+        "48": "icon.png"
+    },
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": "icon.png"
+    },
+    "permissions": [
+        "cookies",
+        "storage",
+        "tabs",
+        "scripting"
+    ],
+    "host_permissions": [
+        "*://*.youtube.com/*",
+        "<all_urls>"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    }
+}
