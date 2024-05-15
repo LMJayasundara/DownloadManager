@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from "react-router-dom";
-import { FaSave, FaDownload, FaTrashAlt, FaArrowLeft } from 'react-icons/fa'; // Example icons
+import React, { useState, useEffect } from 'react';
+import { FaSave, FaDownload, FaTrashAlt, FaArrowLeft, FaSync } from 'react-icons/fa'; // Example icons
 import { useData } from '../DownloadContext';
 const ipcRenderer = electron.ipcRenderer;
 
@@ -11,13 +10,12 @@ function Settings() {
 
   // Function to handle logout logic
   const logout = () => {
-    // Here you would clear any authentication tokens, user data, etc.
-    console.log("Logging out..."); // Replace with actual logout logic
-    navigate('/'); // Redirect to login or another appropriate route
+    ipcRenderer.send('logout');
   };
 
   useEffect(() => {
     ipcRenderer.send('page', { page: 'Settings' });
+
     return () => {
       ipcRenderer.removeAllListeners('page');
     };
@@ -47,6 +45,12 @@ function Settings() {
     ipcRenderer.send('deleteAllPlaylists');
   };
 
+  const bckupData = () => {
+    console.log("Backup Data...");
+    // Implement deletion logic
+    ipcRenderer.send('bckupData');
+  };
+
   // Function to update the cookie in the store and main process
   const saveCookie = () => {
     console.log("Saving Cookie:", cookie);
@@ -58,9 +62,6 @@ function Settings() {
     console.log("Saving Interval:", interval);
     ipcRenderer.send('setCheckPlaylistInterval', { interval: interval });
   };
-
-  const navigate = useNavigate();
-
   return (
     <div className='flex flex-col h-full items-center justify-center p-4 border-2 rounded-lg w-full'>
 
@@ -72,14 +73,15 @@ function Settings() {
 
       <main className='flex-grow w-full px-4'>
         <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg p-8 border border-gray-200 shadow-md space-y-4 w-full">
-
-          <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-            <p className="text-sm font-bold text-gray-600 mb-4 md:mb-0 md:mr-4">
-              YouTube Cookie <br />(required for downloading private videos)
-            </p>
-            <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+          <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+            <div className="flex-grow md:flex-none md:w-1/3">
+              <p className="text-sm font-bold text-gray-600 mb-4 md:mb-0 md:mr-4">
+                YouTube Cookie <br />(required for downloading private videos)
+              </p>
+            </div>
+            <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-2/3">
               <input
-                className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 md:flex-grow md:basis-3/5"
+                className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                 value={cookie}
                 onChange={(e) => setCookie(e.target.value)}
                 placeholder="Enter your YouTube Cookie..."
@@ -92,14 +94,16 @@ function Settings() {
               </button>
             </div>
           </div>
-
-          <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <p className="text-sm font-bold text-gray-600 mb-4 md:mb-0 md:mr-4">
-              Set the interval to check for new videos <br />(in minutes)
-            </p>
-            <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+          
+          <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+            <div className="flex-grow md:flex-none md:w-1/3">
+              <p className="text-sm font-bold text-gray-600 mb-4 md:mb-0 md:mr-4">
+                Set the interval to check for new videos <br />(in minutes)
+              </p>
+            </div>
+            <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-2/3">
               <input
-                className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 md:flex-grow md:basis-2/5"
+                className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                 type="number"
                 value={interval}
                 onChange={(e) => setInterval(Number(e.target.value))}
@@ -136,7 +140,7 @@ function Settings() {
             </div>
 
             <div className="flex justify-between items-center">
-              <p className="text-sm font-bold text-gray-600">Delete all Audios</p>
+              <p className="text-sm font-bold text-gray-600">Delete all audios</p>
               <button className="py-2 w-32 px-4 bg-red-500 rounded-lg text-white font-bold text-sm hover:bg-red-600 focus:outline-none flex items-center justify-center space-x-2"
                 onClick={deleteAllAudios}
               >
@@ -154,6 +158,16 @@ function Settings() {
                 <span>Delete</span>
               </button>
             </div>
+
+            {/* <div className="flex justify-between items-center">
+              <p className="text-sm font-bold text-gray-600">Backup Data</p>
+              <button className="py-2 w-32 px-4 bg-red-500 rounded-lg text-white font-bold text-sm hover:bg-red-600 focus:outline-none flex items-center justify-center space-x-2"
+                onClick={bckupData}
+              >
+                <FaSync className="text-md" />
+                <span>Backup</span>
+              </button>
+            </div> */}
 
             <div className="flex justify-between items-center">
               <p className="text-sm font-bold text-gray-600">Sign Out</p>

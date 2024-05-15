@@ -3,8 +3,8 @@ function Help() {
     <div className='flex h-full flex-col items-center justify-center'>
       {/* Adjusted max-w class for a narrower modal */}
       <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg p-8 border border-gray-200 shadow-md space-y-4 w-full max-w-md mx-auto">
-        <p className='text-lg text-center text-gray-500 mb-8'>
-          Save your YouTube playlist to your Mac, Windows, or Linux PC.
+        <p className='text-lg text-center text-gray-900 mb-8'>
+          Save videos, audios and YouTube playlists to your PC
         </p>
 
         <a href="https://playdownloader.com/userguide.html"

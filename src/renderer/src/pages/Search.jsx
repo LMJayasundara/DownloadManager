@@ -88,15 +88,15 @@ function Search() {
 
   return (
     <div className='flex flex-col h-full items-center justify-center p-4 border-2 rounded-lg w-full'>
-      <header className='w-full flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0'>
+      <header className='w-full flex flex-row items-center mb-4'>
         <input
           type="text"
-          placeholder="Search For Video..."
-          className="px-4 py-2 w-full border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 md:max-w-lg"
+          placeholder="Enter Keyword"
+          className="flex-grow px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
           onChange={handleSearchChange}
           value={searchQuery}
         />
-        <div className="flex space-x-2">
+        <div className="flex items-center space-x-2 ml-4">
           <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none">
             Search
           </button>
@@ -120,7 +120,8 @@ function Search() {
       </main>
 
       <footer className='w-full text-center pt-4'>
-        <span className='text-gray-600'>{filteredVideos.length} Match{filteredVideos.length !== 1 ? 'es' : ''} Found</span>
+        {/* <span className='text-gray-600'>{filteredVideos.length} Match{filteredVideos.length !== 1 ? 'es' : ''} Media Found</span> */}
+        <span className='text-gray-600'>{filteredVideos.length} Media Found</span>
       </footer>
     </div>
   );

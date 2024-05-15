@@ -1,0 +1,160 @@
+#######################
+CLIENT TODO:
+#######################
+(1) I want the extension zip files bundled with the software. On the settings page, there will be a "Browser Extension" button. It will open up the extensions folder. Users can then install extensions manually from there...
+
+(12) I want to use the browser extensions to copy the youtube cookie. Add the "Copy Cookie" button to it. Users can then paste the copied cookie into the setting page. It can download private videos at the moment, but I want it to download private playlists too.
+
+(23) When the "Download Video" button is clicked in the browser extension, the PlayDownloader app should be launched (if not yet launched). The window should be focused on and maximized (if already launched or in the system tray). 
+- Also, "Download Video" button in the browser extension should be changed to color blue.
+- The spaces beside the "Download Video" button should be reduced. Check screenshot: 6.png
+
+(26) I want the browser extensions to support download of tiktok videos. There is a "Download Video" button already on each tiktok video player. 
+- Also, if I navigate to a webpage that has a video player (apart from youtube and tiktok). I want the browser extensions to detect the video file being played and download it when the "Download Video" button is clicked. If the page has multiple players, it should pick the first one on the page and ignore the rest.
+
+
+#######################
+CLIENT DONE:
+#######################
+(2) The icon/image in the installer is a bit grainy/blurry. I want to make it look better. Check screenshot: blur.png
+
+(3) The tag for the "Quit" button in the system tray is written as "   Quit" instead of "Quit". Also, when you right-click in the fields, the items have similar spaces in front of them. Check screenshots: 1.png and 2.png . I want to remove the empty spaces.
+
+(4) I want to add a "Help" tab/page. It will have a link to the user-guide and contact page. It will look like this:
+User Guide => linked to: https://playdownloader.com/userguide.html
+Contact Us => linked to: https://playdownloader.com/contact.html
+
+(5) When the software is accidentally closed when a download is in progress, or when a video-file is accidentally deleted, it messes up the whole system. When I right-click on a video, there should be an option to "Re-download". Check screenshot: 3.png
+
+(6) I want to add "Delete all videos" and "Delete all playlists" buttons on the settings page. Clicking any of the buttons should popup a message asking the user if they are sure about taking the action...
+
+(7) When "Download audio file" or any "Download" button is clicked, the progress bar should show a "Downloading..." message immediately, so that the user will know that a process has begun. 
+- If a video's audio file has already been downloaded earlier, the audio folder should open up and that particular audio file selected/pointed-out ...
+- If a video or playlist is already downloaded earlier, the progress bar message should be "Already downloaded..."
+
+(8) If a user installs the software on another computer with the same license key, I want the software to be signed out on the other computers/devices using the same key. A license should be usable on one computer/device at a time. 
+
+(9) The size of the video player in the app is too big. I want to reduce it. Check screenshots: 4.png
+
+(10) Clicking the "Back" button when playing a video in a playlist should return the page to the "Playlists" page.
+
+(11) It doesn't monitor multiple playlists for new videos. There is a bug here. It just stops when I add a second or third playlist... It should pick each playlist one by one at every interval.
+
+(13) I want to add an "About" tab/page in the app. This will be used to display information about the software (Software name, current version, license key, (C) PlayDownloader.com current year). The "PlayDownloader.com" should be clickable and linked to: https://playdownloader.com
+
+(14) I want to remove license information from the Settings page.
+
+(15) All the lists (search, downloaded videos and playlists) should have the total number of videos displayed somewhere at the top of the list. The Playlists should have the total number of playlists.
+
+(16) When playing a video, the file-size, date/time uploaded to YouTube and date/time added to the PlayDownloader app should appear on the page.
+
+(17) When displaying a list of videos (on home, search and playlist page), only the video title, file-size and date added to the PlayDownloader app should be shown. The video description and tags should be hidden.
+
+(18) Backup/syncing of download data should occur after each interval.
+- Also, if I have a list of downloads or playlist already, I sign-out and then sign-in with a different license that has download data, the local and server data should be merged and synced back to the server.
+
+(19) After deleting or adding a video under a playlist/home/search, the page should be refreshed immediately.
+
+(20) On the "Home" and "Search" pages, newly downloaded videos should be shown first.
+
+(21) Search page has a bug, it displays only 3 results. I want this fixed.
+
+(22) The software updates itself when a new version is detected. I want to remove "electron.app." from the updater message title, leaving only "Play Downloader". 
+- "playdownloader version..." in the message body should be written as "Play Downloader version..."
+- "...installed on exit" should be changed to "...installed on exit." 
+
+(24) I want to use the font used on snapdownloader.com website in the app and in the browser extensions. Check screenshot: 7.png
+
+(25) I think the interface can crash if I have too many videos in my downloaded videos list. Currently, it loads information about all the videos. 
+- I think scrolling to see/fetch more data will be better. I think it should display about 100 videos and if a user scrolls past that, it will add another 100 to the display... 
+
+(27) I want to improve the display of the queue/progress-bar too. Everything is currently overlapping.
+
+(28) The software currently uses Digital Ocean service to store files and updates, I would like to move this to my namecheap vps server.
+- It also uses Firebase to store users license/login details and video-download data. I want to move these to my namecheap vps server as well.
+
+(29) The software uses youtube api for some aspects and I don't really know the impact this will have in the future (I don't have many users at the moment). I read that there is a limit of 10000 requests. Few users can exhaust this. I read online that there are alternative libraries that can be employed to bypass the limits.
+
+(30) I want to secure the app from piracy. I don't want it to be de-compiled and used freely without license. Currently, it seems to be secured partially because it connects to the cloud to collect some data. I want to improve this security aspect...
+
+#######################
+My TODO:
+#######################
+
+
+
+#######################
+My DONE:
+#######################
+- add metadata into videos check download complete or not - done
+- model window before delete the video - done
+- validate url and handle error - done
+- setup login - done
+- setup updater -done
+- setup cookies - done
+- setup check new video in playlist in time interval - done
+- 3rd pary video downlaod - done
+- handle delete playlist and it videos - done
+- setup playlist video quality - done
+- mp3 download - done
+- save user credentials locally
+- Setting up a simple electron update server
+
+#######################
+mysql:
+#######################
+  username: playdwl_PlayDownloader
+  passwd: D0=PVSdDK9LP
+
+#######################
+login:
+#######################
+  test@gmail.com
+  password123
+
+#######################
+Server:
+#######################
+  https://server1.playdownloader.com:2083/
+  playdwl => PTf#x6elQfVk
+
+
+#######################
+My Suggestions:
+#######################
+- Playlist Player
+- Mp3, Mp4 Filter
+- Set download location
+- Set download floder structure
+- File save with their name
+- Add loding indicator when on going progress like loging. initaialte downloading
+- When deleting video shoud not delete playlist videos
+- in Home shoud show videos only not in playlist videos in playlist
+- add sync and backup buton to the setting page
+
+#######################
+Description:
+#######################
+🛠️ Excited to share a project I've been working on: a custom Download Manager built using ElectronJS, Vite, and React. This tool allows users to efficiently manage downloads of YouTube and TikTok videos, supporting formats like MP4 and MP3. Key features include the ability to pause, resume, and stop downloads, auto-resume capabilities for deleted files, and the option to download entire YouTube playlists. The user-friendly interface also displays downloaded videos and playlists, includes a search function, and automatically updates to the latest version.
+
+I developed this to streamline the video download process and ensure easy management directly from your desktop. Proud of what we've achieved and excited for what comes next!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

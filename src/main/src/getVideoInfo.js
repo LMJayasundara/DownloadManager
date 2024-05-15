@@ -1,16 +1,22 @@
 const ytpl = require('ytpl');
-const ytdl = require('ytdl-core');
+// const ytdl = require('ytdl-core');
+const ytdl = require("@distube/ytdl-core");
 const { v1 } = require("node-tiklydown");
+const fs = require('fs');
 
-export async function YoutubeVideoDetails(url, format, quality) {
+export async function YoutubeVideoDetails(url, format, quality, filePath) {
   try {
-    const info = await ytdl.getInfo(url);
+    const agent = ytdl.createAgent(JSON.parse(fs.readFileSync(filePath)));
+
+    const info = await ytdl.getInfo(url, { agent: agent });
     const details = {
-      id: info.videoDetails.videoId,
+      id: info.videoDetails.videoId + format,
       title: info.videoDetails.title,
       url: url,
       format: format,
       quality: quality,
+      date: new Date(),
+      type: 'youtube',
       author: info.videoDetails.author.name,
       description: info.videoDetails.description,
       tags: info.videoDetails.keywords,
@@ -19,8 +25,9 @@ export async function YoutubeVideoDetails(url, format, quality) {
     };
     return details;
   } catch (error) {
-    console.error('Error fetching video details:', error);
-    return null
+    // console.error('Error fetching video details:', error);
+    throw new Error(error);
+    // return null
   }
 };
 
@@ -28,11 +35,13 @@ export async function TikTokVideoDetails(url, format, quality, defaultAuthor, de
   try {
     const info = await v1(url);
     return {
-      id: info.id.toString(),
+      id: info.id.toString() + format,
       title: info.title,
       url: url,
       format: format,
       quality: quality,
+      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      type: 'tiktok',
       author: info.author.name,
       description: '',
       tags: [],
@@ -55,14 +64,65 @@ function urlHash(url) {
   return Math.abs(hash).toString(16);
 }
 
+// function extractInfo(url) {
+//   const domainPattern = /https?:\/\/([^\/]+)/;
+//   const namePattern = /([^\/]+)(?=\.\w+$)/;
+
+//   const domainMatch = url.match(domainPattern);
+//   const nameMatch = url.match(namePattern);
+
+//   let title = domainMatch ? domainMatch[1] : "Unknown";
+//   let name = nameMatch ? nameMatch[1] : "Unknown";
+
+//   // Replace underscores and hyphens and charcters with spaces
+//   name = name.replace(/[%$3@_-]/g, ' ');
+
+//   // Remove separate words that are purely numeric
+//   name = name.split(' ').filter(part => !/^\d+$/.test(part)).join(' ');
+
+//   // Simplify title by extracting only the domain name, not subdomains
+//   title = title.replace(/www\./, '').split('.').slice(-2).join('.');
+
+//   return { title, name };
+// }
+
+function extractInfo(url) {
+  const domainPattern = /https?:\/\/([^\/]+)/;
+  const namePattern = /([^\/]+)(?=\.\w+$)/;
+  const formatPattern = /\.(\w+)$/; // Regex to capture file extension
+
+  const domainMatch = url.match(domainPattern);
+  const nameMatch = url.match(namePattern);
+  const formatMatch = url.match(formatPattern); // Match the file extension
+
+  let title = domainMatch ? domainMatch[1] : "Unknown";
+  let name = nameMatch ? nameMatch[1] : "Unknown";
+  let format = formatMatch ? formatMatch[1] : "mp4";
+
+  // Replace underscores, hyphens, and certain characters with spaces in the name
+  name = name.replace(/[%$3@_-]/g, ' ');
+
+  // Remove separate words that are purely numeric
+  name = name.split(' ').filter(part => !/^\d+$/.test(part)).join(' ');
+
+  // Simplify title by extracting only the domain name, not subdomains
+  title = title.replace(/www\./, '').split('.').slice(-2).join('.');
+
+  return { title, name, format }; // Include format in the returned object
+}
+
+
 export function GenericVideoDetails(url, format, quality, defaultAuthor, defaultThumbnail) {
+  const vidInfo = extractInfo(url);
   return {
-    id: urlHash(url),
-    title: 'Generic Video',
+    id: urlHash(url) + vidInfo.format,
+    title: vidInfo.name,
     url: url,
-    format: format,
+    format: vidInfo.format,
     quality: quality,
-    author: 'Unknown',
+    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    type: 'generic',
+    author: vidInfo.title,
     description: '',
     tags: [],
     authorPhoto: defaultAuthor,
@@ -76,7 +136,12 @@ async function getVideoDescription(videoId) {
     const info = await ytdl.getBasicInfo(videoId);
     // Since you now also need tags and author photo, ensure these are included if available
     const tags = info.videoDetails.keywords || []; // keywords can serve as tags
-    const authorPhoto = info.videoDetails.author.thumbnails ? info.videoDetails.author.thumbnails[0].url : ''; // Get the first thumbnail as author photo
+    // const authorPhoto = info.videoDetails.author.thumbnails ? info.videoDetails.author.thumbnails[0].url : ''; // Get the first thumbnail as author photo
+    let authorPhoto = "";
+    if (info.videoDetails.author && info.videoDetails.author.thumbnails && info.videoDetails.author.thumbnails.length > 0) {
+      authorPhoto = info.videoDetails.author.thumbnails[0].url;
+    }
+    
     return {
       description: info.videoDetails.description,
       tags: tags,
@@ -98,10 +163,12 @@ export async function PlaylistVideoDetails(playlistURL) {
     const itemsWithDetailsPromises = details.items.map(async (item) => {
       const { description, tags, authorPhoto } = await getVideoDescription(item.id);
       return {
-        id: item.id,
+        id: item.id + "mp4",
         title: item.title,
         format: "mp4",
         url: item.shortUrl,
+        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+        type: 'playlist',
         author: item.author.name,
         description: description,
         tags: tags,

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom'; // Import useParams and useNavigate hooks
-import { FaArrowLeft, FaEllipsisV, FaPauseCircle, FaStopCircle, FaPlay } from 'react-icons/fa'; // Import the left arrow icon
+import { useNavigate, useLocation } from 'react-router-dom';
+import { FaArrowLeft, FaEllipsisV, FaPauseCircle, FaStopCircle, FaPlay } from 'react-icons/fa';
+import { MdDownloadForOffline } from "react-icons/md";
 import { useData } from '../DownloadContext';
 const ipcRenderer = electron.ipcRenderer;
 
-const VideoCard = ({ video, index }) => {
+const VideoCard = ({ video, index, id }) => {
   const { downloadProgress, downloadComplete } = useData();
   const progress = downloadProgress[video.id];
   const completed = downloadComplete[video.id];
@@ -43,18 +44,33 @@ const VideoCard = ({ video, index }) => {
     ipcRenderer.send('stopVideo', { videoId: video.id });
   };
 
+  function truncateTitle(title, maxWords) {
+    const titleWords = title ? title.split(' ') : "";
+    if (titleWords.length > maxWords) {
+      return titleWords.slice(0, maxWords).join(' ') + '...';
+    }
+    return title;
+  }
+
+  const handleDownload = () => {
+    console.log('Download requested for video ID:', video.id);
+    ipcRenderer.send('downloadVideo', { url: video.url, quality: video.quality, format: video.format }); // Ensure these details are correct as per your requirements
+  };
+
   return (
     <div key={index}
       className="relative bg-white rounded-lg bg-opacity-10 backdrop-filter backdrop-blur-lg space-y-4 w-full transition-transform duration-200 hover:scale-105 hover:shadow-lg border border-gray-300 group"
       onClick={goToAlbum}
       role="button"
     >
-      <div className="relative">
-        <img src={video.thumbnailUrl} alt={video.title} className="rounded-lg w-full object-cover" />
+      <div className="relative group w-full bg-black rounded-lg overflow-hidden">
+        <img src={video.thumbnailUrl}
+          alt={video.title}
+          className="rounded-lg w-full object-cover h-28 w-32" />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="absolute bottom-0 p-4 w-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <p>Video</p>
+          <p>{video.format === "mp4" ? "Video" : "Audio"}</p>
         </div>
 
         {progress && !completed && (
@@ -71,6 +87,14 @@ const VideoCard = ({ video, index }) => {
             </button>
           </div>
         )}
+
+        {video && !video.fileExist && (
+          <div className="absolute top-2 left-2 flex space-x-2">
+            <button onClick={(e) => { e.stopPropagation(); handleDownload(); }}>
+              <MdDownloadForOffline className="text-white" />
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="p-2">
@@ -78,7 +102,7 @@ const VideoCard = ({ video, index }) => {
           <img src={video.authorPhoto} alt={video.author} className="h-10 w-10 rounded-full object-cover" />
           <span className="text-sm font-semibold">{video.author}</span>
         </div>
-        <h3 className="text-md font-semibold mt-1" style={{ minHeight: '4rem' }}>{video.title}</h3>
+        <h3 className="text-md font-semibold mt-1" style={{ minHeight: '4rem' }}>{truncateTitle(video.title, 8)}</h3>
       </div>
 
       <button
@@ -96,21 +120,15 @@ const VideoCard = ({ video, index }) => {
           <div className="absolute right-0 bottom-10 bg-white rounded-md shadow-lg">
             <ul>
               <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" role="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate('/player', { state: { video } });
-              }}>Play</li>
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/player', { state: { video } });
+                }}>Play</li>
               <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" role="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                ipcRenderer.send('deleteVideo', { videoId: video.id });
-              }}>Delete</li>
-
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" role="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                ipcRenderer.send('downloadVideo', { url: `https://www.youtube.com/watch?v=${video.id }`, quality: "720p" });
-              }}>Download</li>
+                onClick={(e) => {
+                  e.stopPropagation();
+                  ipcRenderer.send('deletePlaylistVideo', { playlistId: id, videoId: video.id });
+                }}>Delete</li>
             </ul>
           </div>
         )}
@@ -126,6 +144,8 @@ function Album() {
   const videos = playlist.items;
   const [filteredVideos, setFilteredVideos] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  // const [renderedVideos, setRenderedVideos] = useState(null);
+  // const {loadingPlaylists} = useData();
 
   useEffect(() => {
     if (searchQuery === '') {
@@ -143,9 +163,21 @@ function Album() {
     setSearchQuery(e.target.value);
   };
 
+  useEffect(() => {
+    const handlePlaylistUpdate = () => {
+      navigate("/playlists")
+    };
+  
+    ipcRenderer.on('palylistAlbumVideos', handlePlaylistUpdate);
+  
+    return () => {
+      ipcRenderer.removeListener('palylistAlbumVideos', handlePlaylistUpdate);
+    };
+  }, []);
+
   return (
     <div className='flex flex-col h-screen h-full items-center justify-center p-4 border-2 rounded-lg w-full'>
-      
+
       <header className='w-full flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0'>
         <button onClick={() => navigate(-1)} className='flex items-center text-gray-600'>
           <FaArrowLeft />
@@ -170,13 +202,13 @@ function Album() {
       <main className='w-full flex-grow overflow-auto p-4'>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredVideos.map((video, index) => (
-            <VideoCard key={video.id} video={video} index={index} />
+            <VideoCard key={video.id} video={video} index={index} id={playlist.id} />
           ))}
         </div>
       </main>
 
       <footer className='w-full text-center pt-4'>
-        <span className='text-gray-600'>{playlist.items.length} Videos</span>
+        <span className='text-gray-600'>{playlist.items.length} Video(s)</span>
       </footer>
 
     </div>
