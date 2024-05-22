@@ -45,6 +45,12 @@ function Settings() {
     ipcRenderer.send('deleteAllPlaylists');
   };
 
+  const openFolder = () => {
+    console.log("Open Extension Folder...");
+    // Implement deletion logic
+    ipcRenderer.send('openExtensionFolder');
+  };
+
   const bckupData = () => {
     console.log("Backup Data...");
     // Implement deletion logic
@@ -123,7 +129,9 @@ function Settings() {
           <div className="flex flex-col space-y-4">
             <div className="flex justify-between items-center">
               <p className="text-sm font-bold text-gray-600">Browser Extension</p>
-              <button className="py-2 px-4 bg-blue-500 rounded-lg text-white font-bold text-sm hover:bg-blue-600 focus:outline-none flex items-center justify-center space-x-2">
+              <button className="py-2 px-4 bg-blue-500 rounded-lg text-white font-bold text-sm hover:bg-blue-600 focus:outline-none flex items-center justify-center space-x-2"
+              onClick={openFolder}
+              >
                 <FaDownload className="text-md" />
                 <span>Download</span>
               </button>

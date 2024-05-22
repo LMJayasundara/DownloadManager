@@ -26,7 +26,7 @@ export async function YoutubeVideoDetails(url, format, quality, filePath) {
     return details;
   } catch (error) {
     // console.error('Error fetching video details:', error);
-    throw new Error(error);
+    throw new Error("Failed to Fetch Video Details");
     // return null
   }
 };
@@ -49,8 +49,9 @@ export async function TikTokVideoDetails(url, format, quality, defaultAuthor, de
       thumbnailUrl: info.video.cover || defaultThumbnail
     };
   } catch (error) {
-    console.error('Error fetching TikTok video details:', error);
-    return null;
+    // console.error('Error fetching TikTok video details:', error);
+    // return null;
+    throw new Error("Failed to Fetch Video Details");
   }
 };
 
@@ -113,21 +114,25 @@ function extractInfo(url) {
 
 
 export function GenericVideoDetails(url, format, quality, defaultAuthor, defaultThumbnail) {
-  const vidInfo = extractInfo(url);
-  return {
-    id: urlHash(url) + vidInfo.format,
-    title: vidInfo.name,
-    url: url,
-    format: vidInfo.format,
-    quality: quality,
-    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-    type: 'generic',
-    author: vidInfo.title,
-    description: '',
-    tags: [],
-    authorPhoto: defaultAuthor,
-    thumbnailUrl: defaultThumbnail
-  };
+  try {
+    const vidInfo = extractInfo(url);
+    return {
+      id: urlHash(url) + vidInfo.format,
+      title: vidInfo.name,
+      url: url,
+      format: vidInfo.format,
+      quality: quality,
+      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      type: 'generic',
+      author: vidInfo.title,
+      description: '',
+      tags: [],
+      authorPhoto: defaultAuthor,
+      thumbnailUrl: defaultThumbnail
+    };
+  } catch (error) {
+    throw new Error("Failed to Fetch Video Details");
+  }
 };
 
 
@@ -148,12 +153,13 @@ async function getVideoDescription(videoId) {
       authorPhoto: authorPhoto
     };
   } catch (error) {
-    console.error(`Error fetching video description for video ID ${videoId}:`, error);
-    return {
-      description: '',
-      tags: [],
-      authorPhoto: ''
-    }; // Return an object with empty strings or arrays for each property if the description cannot be fetched
+    // console.error(`Error fetching video description for video ID ${videoId}:`, error);
+    // return {
+    //   description: '',
+    //   tags: [],
+    //   authorPhoto: ''
+    // }; // Return an object with empty strings or arrays for each property if the description cannot be fetched
+    throw new Error("Failed to Fetch Video Details");
   }
 }
 
@@ -190,7 +196,8 @@ export async function PlaylistVideoDetails(playlistURL) {
       items: itemsWithDetails,
     };
   } catch (error) {
-    console.error('Error fetching playlist details:', error);
-    throw error;
+    // console.error('Error fetching playlist details:', error);
+    // throw error;
+    throw new Error("Failed to Fetch Video Details");
   }
 }

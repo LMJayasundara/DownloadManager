@@ -29,7 +29,7 @@ const packageJson = require('../../package.json');
 import AutoLaunch from 'auto-launch';
 
 import { first, all } from "macaddress-local-machine";
-// Get the first MAC address
+// // Get the first MAC address
 const macAddress = first();
 
 let playlistCheckTimer = null;
@@ -39,6 +39,13 @@ let defaultThumbnail = null, defaultAuthor = null;
 let logoutTimer = null;
 let loginStatus = false;
 // let useId = null;
+const express = require('express');
+const net = require('net');
+// const expressapp = express();
+// const expressport = 8000;
+
+let expressApp;
+const expressPort = 8000;
 
 import io from 'socket.io-client';
 const URL = 'https://playdownloader.com';
@@ -61,9 +68,6 @@ socket.on('disconnect', () => {
   console.log('disconnected from server');
 });
 
-// const express = require('express');
-// const expressapp = express();
-// const expressport = 3210;
 
 // expressapp.use(express.json()); // Middleware to parse JSON bodies
 
@@ -78,6 +82,49 @@ socket.on('disconnect', () => {
 // expressapp.listen(expressport, () => {
 //   console.log(`Server listening at http://localhost:${expressport}`);
 // });
+
+function startExpressServer(port) {
+  expressApp = express();
+  expressApp.use(express.json());
+
+  expressApp.post('/url', async (req, res) => {
+    const url = req.body.url;
+    console.log('URL received:', url);
+    // Handle the URL as needed in your Electron app
+
+    res.send({ status: 'URL received' });
+    mainWindow.webContents.send('downloadUrlExtention', { url: url, quality: "720p" });
+  });
+
+  expressApp.listen(port, () => {
+    console.log(`Server listening at http://localhost:${port}`);
+  });
+}
+
+function checkPort(port) {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+
+    server.once('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        resolve(true);
+      } else {
+        reject(err);
+      }
+    });
+
+    server.once('listening', () => {
+      server.close();
+      resolve(false);
+    });
+
+    server.listen(port);
+  });
+}
+
+ipcMain.on('shutdown', () => {
+  app.quit();
+});
 
 let appAutoLauncher = new AutoLaunch({
   isHidden: true,
@@ -267,6 +314,33 @@ async function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  // Get the path to the extension folder
+  // const extensionPath = path.join(app.getAppPath(), 'resources', 'extension');
+  // const extensionPath = path.join(process.resourcesPath, '../extension');
+
+  let extensionPath;
+  if (is.dev) {
+    extensionPath = path.join(app.getAppPath(), 'extension');
+  } else {
+    extensionPath = path.join(process.resourcesPath, '../extension');
+  }
+  console.log("Extension folder path:", extensionPath);
+
+  // IPC listener to open the extension folder
+  ipcMain.on('openExtensionFolder', (event) => {
+    shell.openPath(extensionPath)
+      .then(result => {
+        if (result) {
+          console.error('Error opening folder:', result);
+        } else {
+          console.log('open-extension-folder-result success');
+        }
+      })
+      .catch(error => {
+        console.error('Error opening folder:', error);
+      });
+  });
 }
 
 // app.setLoginItemSettings({
@@ -280,7 +354,7 @@ async function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.playdownloader')
 
@@ -1490,33 +1564,121 @@ app.whenReady().then(() => {
   ipcMain.on('page', async (event, obj) => {
     switch (obj.page) {
       case 'Check':
-        const rememberMe = await getStoreAsync(appInfo, 'rememberMe');
-        if (rememberMe) {
-          const username = await getStoreAsync(appInfo, 'username');
-          const password = await getStoreAsync(appInfo, 'password');
-          mainWindow.webContents.send('checkRes', { username: username, password: password, rememberMe: rememberMe });
+        try {
+          const rememberMe = await getStoreAsync(appInfo, 'rememberMe');
+          if (rememberMe) {
+            const username = await getStoreAsync(appInfo, 'username');
+            const password = await getStoreAsync(appInfo, 'password');
+            mainWindow.webContents.send('checkRes', { username: username, password: password, rememberMe: rememberMe });
 
-          let respond = await login(username, password, macAddress.macAddr); // Ensure device_id is passed
+            let respond = await login(username, password, macAddress.macAddr); // Ensure device_id is passed
+            if (respond.status === "success") {
+              mainWindow.webContents.send('status', { status: "success" });
+              loginStatus = true;
+              await setStoreAsync(appInfo, 'userId', respond.userId);
+              socket.emit('status', { id: respond.userId, login: loginStatus });
+
+              if (respond.mediaData !== null) {
+                bckMedia(respond.mediaData);
+              }
+              // else {
+              //   syncMedia();
+              // }
+
+              clearTimeout(logoutTimer);
+              // setTimeout(logout, 3600000); // 3600000 milliseconds = 1 hour
+              // Set up the interval to call checkLicenseStatus every 60 minutes
+              logoutTimer = setInterval(async () => {
+                await checkLicenseStatus();
+              }, 1 * 1000 * 60 * 60);
+
+            } else {
+              const options = {
+                type: 'error',
+                buttons: ['OK'],
+                defaultId: 0,
+                cancelId: 0,
+                title: 'Auth Error!',
+                message: 'Login Error!',
+                detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
+                alwaysOnTop: true
+              };
+              await setStoreAsync(appInfo, 'username', '');
+              await setStoreAsync(appInfo, 'password', '');
+              await setStoreAsync(appInfo, 'rememberMe', false);
+              await setStoreAsync(appInfo, 'license', '');
+              await setStoreAsync(appInfo, 'userId', '');
+
+              dialog.showMessageBox(mainWindow, options).then(result => {
+                if (result.response === 0) { // User clicked 'OK'
+                  mainWindow.webContents.send('status', { status: "error" });
+                }
+              });
+            }
+          } else {
+            mainWindow.webContents.send('checkRes', { username: '', password: '', rememberMe: false });
+          }
+        } catch (error) {
+          const options = {
+            type: 'error',
+            buttons: ['OK'],
+            defaultId: 0,
+            cancelId: 0,
+            title: 'Auth Error!',
+            message: 'Login Error!',
+            detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
+            alwaysOnTop: true
+          };
+          await setStoreAsync(appInfo, 'username', '');
+          await setStoreAsync(appInfo, 'password', '');
+          await setStoreAsync(appInfo, 'rememberMe', false);
+          await setStoreAsync(appInfo, 'license', '');
+          await setStoreAsync(appInfo, 'userId', '');
+
+          dialog.showMessageBox(mainWindow, options).then(result => {
+            if (result.response === 0) { // User clicked 'OK'
+              mainWindow.webContents.send('status', { status: "error" });
+            }
+          });
+        }
+        break;
+
+      case 'Login':
+        try {
+          let respond = await login(obj.email, obj.password, macAddress.macAddr); // Ensure device_id is passed
           if (respond.status === "success") {
             mainWindow.webContents.send('status', { status: "success" });
-            loginStatus = true;
-            await setStoreAsync(appInfo, 'userId', respond.userId);
-            socket.emit('status', { id: respond.userId, login: loginStatus });
+            if (obj.rememberMe) {
+              await setStoreAsync(appInfo, 'username', obj.email);
+              await setStoreAsync(appInfo, 'password', obj.password);
+              await setStoreAsync(appInfo, 'rememberMe', true);
+              await setStoreAsync(appInfo, 'license', respond.license);
 
-            if (respond.mediaData !== null) {
-              bckMedia(respond.mediaData);
+              await setStoreAsync(appInfo, 'userId', respond.userId);
+              loginStatus = true;
+              socket.emit('status', { id: respond.userId, login: loginStatus });
+
+              if (respond.mediaData !== null) {
+                bckMedia(respond.mediaData);
+              }
+              // else {
+              //   syncMedia();
+              // }
+
+              clearTimeout(logoutTimer);
+              // setTimeout(logout, 3600000); // 3600000 milliseconds = 1 hour
+              // Set up the interval to call checkLicenseStatus every 60 minutes
+              logoutTimer = setInterval(async () => {
+                await checkLicenseStatus();
+              }, 1 * 1000 * 60 * 60);
+
+            } else {
+              await setStoreAsync(appInfo, 'username', '');
+              await setStoreAsync(appInfo, 'password', '');
+              await setStoreAsync(appInfo, 'rememberMe', false);
+              await setStoreAsync(appInfo, 'license', '');
+              await setStoreAsync(appInfo, 'userId', '');
             }
-            // else {
-            //   syncMedia();
-            // }
-
-            clearTimeout(logoutTimer);
-            // setTimeout(logout, 3600000); // 3600000 milliseconds = 1 hour
-            // Set up the interval to call checkLicenseStatus every 60 minutes
-            logoutTimer = setInterval(async () => {
-              await checkLicenseStatus();
-            }, 1 * 1000 * 60 * 60);
-
           } else {
             const options = {
               type: 'error',
@@ -1528,11 +1690,11 @@ app.whenReady().then(() => {
               detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
               alwaysOnTop: true
             };
+
             await setStoreAsync(appInfo, 'username', '');
             await setStoreAsync(appInfo, 'password', '');
             await setStoreAsync(appInfo, 'rememberMe', false);
             await setStoreAsync(appInfo, 'license', '');
-            await setStoreAsync(appInfo, 'userId', '');
 
             dialog.showMessageBox(mainWindow, options).then(result => {
               if (result.response === 0) { // User clicked 'OK'
@@ -1540,47 +1702,7 @@ app.whenReady().then(() => {
               }
             });
           }
-        } else {
-          mainWindow.webContents.send('checkRes', { username: '', password: '', rememberMe: false });
-        }
-        break;
-
-      case 'Login':
-        let respond = await login(obj.email, obj.password, macAddress.macAddr); // Ensure device_id is passed
-        if (respond.status === "success") {
-          mainWindow.webContents.send('status', { status: "success" });
-          if (obj.rememberMe) {
-            await setStoreAsync(appInfo, 'username', obj.email);
-            await setStoreAsync(appInfo, 'password', obj.password);
-            await setStoreAsync(appInfo, 'rememberMe', true);
-            await setStoreAsync(appInfo, 'license', respond.license);
-
-            await setStoreAsync(appInfo, 'userId', respond.userId);
-            loginStatus = true;
-            socket.emit('status', { id: respond.userId, login: loginStatus });
-
-            if (respond.mediaData !== null) {
-              bckMedia(respond.mediaData);
-            }
-            // else {
-            //   syncMedia();
-            // }
-
-            clearTimeout(logoutTimer);
-            // setTimeout(logout, 3600000); // 3600000 milliseconds = 1 hour
-            // Set up the interval to call checkLicenseStatus every 60 minutes
-            logoutTimer = setInterval(async () => {
-              await checkLicenseStatus();
-            }, 1 * 1000 * 60 * 60);
-
-          } else {
-            await setStoreAsync(appInfo, 'username', '');
-            await setStoreAsync(appInfo, 'password', '');
-            await setStoreAsync(appInfo, 'rememberMe', false);
-            await setStoreAsync(appInfo, 'license', '');
-            await setStoreAsync(appInfo, 'userId', '');
-          }
-        } else {
+        } catch (error) {
           const options = {
             type: 'error',
             buttons: ['OK'],
@@ -1603,6 +1725,7 @@ app.whenReady().then(() => {
             }
           });
         }
+
         break;
 
       case 'Home':
@@ -1697,6 +1820,8 @@ app.whenReady().then(() => {
         const updatedVideos = { [videoDetails.id]: videoDetails, ...existingVideos };
         await setStoreAsync(videoList, 'videos', updatedVideos);
         console.log(`Saved video details for ${video.url}`);
+
+        mainWindow.webContents.send('downloadUrlVideo', { url: video.url, quality: video.quality, format: video.format });
       } catch (error) {
         console.error(`Failed to fetch or save video details for ${video.url}: ${error}`);
       }
@@ -1714,6 +1839,8 @@ app.whenReady().then(() => {
         };
         await setStoreAsync(playList, 'playlists', updatedPlaylists);
         console.log(`Saved playlist details for ${playlistUrl}`);
+
+        mainWindow.webContents.send('downloadVideoPlaylist', { url: playlistUrl, quality: "720p" });
       } catch (error) {
         console.error(`Failed to fetch or save playlist details for ${playlistUrl}: ${error}`);
       }
@@ -2166,6 +2293,27 @@ app.whenReady().then(() => {
   createWindow();
   autoUpdater.checkForUpdates();
   // setInterval(checkPlaylistUpdates, 1000 * 60 * 1); // Check every 1 minutes
+
+  const isPortInUse = await checkPort(expressPort);
+  if (isPortInUse) {
+    console.log(`Port ${expressPort} is in use. Sending shutdown message.`);
+    const client = net.createConnection({ port: expressPort }, () => {
+      client.write('shutdown');
+      client.end();
+    });
+
+    client.on('end', () => {
+      console.log('Shutdown message sent. Exiting.');
+      app.quit();
+    });
+
+    client.on('error', (err) => {
+      console.error('Error sending shutdown message:', err);
+      app.quit();
+    });
+  } else {
+    startExpressServer(expressPort);
+  }
 
   // Initialize with default or stored interval
   const defaultInterval = appInfo.get('playlistInterval', 5) * 60 * 1000; // Default to 5 minutes if not set

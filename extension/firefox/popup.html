@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Play Downloader</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 10px;
+      width: 400px;
+      height: 400px;
+      overflow: hidden;
+      /* Prevents the body from scrolling */
+      display: flex;
+      flex-direction: column;
+      /* Organizes the children (title, buttons, table) in a column */
+      align-items: center;
+      /* Center content horizontally */
+    }
+
+    h1 {
+      color: #333;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      display: inline-block;
+      /* Change to inline-block for horizontal alignment */
+      width: auto;
+      /* Adjust width as needed */
+      padding: 8px;
+      margin: 0 5px;
+      /* Space between buttons */
+      font-size: 16px;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      /* Needed for tooltip positioning */
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Tooltip styling */
+    button:hover:after {
+      content: attr(title);
+      /* Use the title attribute for the tooltip text */
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      background-color: #000;
+      color: #fff;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+      z-index: 1;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    button:hover:after {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    #cookieTableContainer {
+      flex-grow: 1;
+      /* Takes up all available space */
+      overflow: auto;
+      /* Enables scrolling */
+      width: 100%;
+      /* Sets the width to fill the body */
+      max-height: 300px;
+      /* Limit the height to enforce scrolling */
+    }
+
+    table {
+      min-width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      /* Stick to the top of the table container */
+      background-color: #f2f2f2;
+      /* Same background to cover cells beneath */
+      z-index: 2;
+      /* Ensures the header stays on top of other content */
+      box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); 
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Play Downloader</h1>
+  <div style="padding: 10px 0;">
+    <button id="copyBtn" title="Copy"><i class="fas fa-copy"></i></button>
+    <button id="exportBtn" title="Export"><i class="fas fa-file-export"></i></button>
+    <button id="refreshBtn" title="Refresh Cookies"><i class="fas fa-sync"></i></button>
+    <button id="fetchUrlBtn" title="Fetch Video URL"><i class="fas fa-download"></i></button>
+  </div>
+  <p id="videoUrlDisplay"></p>
+  <div id="cookieTableContainer">
+    <table id="cookieTable">
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Cookie rows will be dynamically added here by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+  <!-- Custom Alert Popup -->
+  <div id="alertModal"
+    style="display: none; position: fixed; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center;">
+    <div
+      style="background: white; padding: 10px; border-radius: 15px; width: auto; max-width: 250px; text-align: center;">
+      <p id="alertMessage" style="font-size: 14px; margin: 0;"></p>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>

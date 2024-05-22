@@ -94,6 +94,21 @@ document.getElementById('fetchUrlBtn').addEventListener('click', function () {
     const currentTab = tabs[0]; // tabs[0] is the active tab in the current window
     const url = currentTab.url;
     document.getElementById('videoUrlDisplay').textContent = url;
+
+    fetch("http://localhost:8000/url", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url: url }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data);
+      })
+      .catch((error) => {
+        console.log("Error:", error);
+      });
   });
 });
 

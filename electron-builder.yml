@@ -2,10 +2,10 @@ appId: com.playdownloader.app
 productName: Play Downloader
 directories:
   buildResources: build
-# extraFiles:
-#   - from: "./node_modules/handbrake-js/bin"
-#     to: "resources/bin"  # This is where they will be placed in the app's resources directory
-#     filter: ["**/*"]
+extraFiles:
+  - from: "extension"
+    to: "extension"  # This is where they will be placed in the app's resources directory
+    # filter: ["**/*"]
 files:
   - '!**/.vscode/*'
   - '!src/*'
@@ -20,6 +20,9 @@ asarUnpack:
   # - 'node_modules/ffprobe-static/bin/${os}/${arch}/*'
 win:
   executableName: Play Downloader
+  # extraResources:
+  #   - from: 'extension'
+  #     to: 'extension'  # Destination path relative to the installation directory
 nsis:
   oneClick: false
   artifactName: ${name}-${version}-setup.${ext}
