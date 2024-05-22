@@ -11,15 +11,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3  # Ensure we are using the latest version
+        uses: actions/checkout@v4  # Updated to the latest version
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3  # Ensure we are using the latest version
+        uses: actions/setup-node@v4  # Updated to the latest version
         with:
           node-version: '20'  # Specify Node.js 20
 
       - name: Cache node modules
-        uses: actions/cache@v3  # Ensure we are using the latest version
+        uses: actions/cache@v4  # Updated to the latest version
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -33,10 +33,10 @@ jobs:
         run: npm install electron-builder --save-dev
 
       - name: Build and package Electron app
-        run: npx electron-builder --mac
+        run: npm run build:mac
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3  # Ensure we are using the latest version
         with:
           name: Play-Downloader-macOS
           path: dist/
