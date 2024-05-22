@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Playdownloader",
+    "name": "Play Downloader",
     "version": "1.0",
-    "description": "Communicate with Electron App",
+    "description": "Play Downloader Extension",
     "icons": {
         "48": "icon.png"
     },

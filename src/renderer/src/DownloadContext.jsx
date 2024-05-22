@@ -51,6 +51,14 @@ export const DataProvider = ({ children }) => {
             ipcRenderer.send('downloadVideo', { url: data.url, quality: data.quality, format: "mp4" });
         });
 
+        ipcRenderer.on('downloadUrlExtention', (data) => {
+            ipcRenderer.send('downloadVideo', { url: data.url, quality: data.quality, format: "mp4" });
+        });
+
+        ipcRenderer.on('downloadUrlVideo', (data) => {
+            ipcRenderer.send('downloadVideo', { url: data.url, quality: data.quality, format: data.format });
+        });
+
         ipcRenderer.on('checkRes', (data) => {
             setCheckRes(data);
         });
@@ -86,6 +94,8 @@ export const DataProvider = ({ children }) => {
             ipcRenderer.removeAllListeners('palylistVideos');
             ipcRenderer.removeAllListeners('appInfo');
             ipcRenderer.removeAllListeners('downloadVideoPlaylist');
+            ipcRenderer.removeAllListeners('downloadUrlExtention');
+            ipcRenderer.removeAllListeners('downloadUrlVideo');
             ipcRenderer.removeAllListeners('checkRes');
             ipcRenderer.removeAllListeners('status');
             ipcRenderer.removeAllListeners('confirmLogout');

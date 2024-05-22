@@ -1,0 +1,42 @@
+name: Build and Package Electron App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install electron-builder
+        run: npm install electron-builder --save-dev
+
+      - name: Build and package Electron app
+        run: npx electron-builder --mac
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Play-Downloader-macOS
+          path: dist/
