@@ -19,9 +19,11 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Install Xcode command line tools
+      run: xcode-select --install || true
+
     - name: Convert extension to Safari
       run: |
-        xcode-select --install
         xcrun safari-web-extension-converter src --project-location safari_extension --app-name "My Safari Extension"
 
     - name: Zip the converted extension
