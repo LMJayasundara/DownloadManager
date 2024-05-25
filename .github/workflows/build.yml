@@ -7,7 +7,11 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
@@ -33,10 +37,17 @@ jobs:
         run: npm install electron-builder --save-dev
 
       - name: Build and package Electron app
-        run: npm run build:mac
+        run: |
+          if [ $RUNNER_OS == 'macOS' ]; then
+            npm run build:mac
+          elif [ $RUNNER_OS == 'Linux' ]; then
+            npm run build:linux
+          elif [ $RUNNER_OS == 'Windows' ]; then
+            npm run build:win
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3  # Ensure we are using the latest version
         with:
-          name: Play-Downloader-macOS
+          name: Play-Downloader-${{ matrix.os }}
           path: dist/
