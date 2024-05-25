@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  macOS (App)
 //
-//  Created by VEGA Innovations on 2024-05-22.
+//  Created by Anka on 5/25/24.
 //
 
 import Cocoa
