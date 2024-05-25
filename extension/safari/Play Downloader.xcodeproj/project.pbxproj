@@ -3,143 +3,140 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8D88D9B62BFDA85D00363F12 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D88D9B52BFDA85D00363F12 /* AppDelegate.swift */; };
-		8D88D9B82BFDA85D00363F12 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D88D9B72BFDA85D00363F12 /* SceneDelegate.swift */; };
-		8D88D9BB2BFDA85D00363F12 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9B92BFDA85D00363F12 /* LaunchScreen.storyboard */; };
-		8D88D9BE2BFDA85D00363F12 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9BC2BFDA85D00363F12 /* Main.storyboard */; };
-		8D88D9C72BFDA85D00363F12 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D88D9C62BFDA85D00363F12 /* AppDelegate.swift */; };
-		8D88D9CA2BFDA85D00363F12 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9C82BFDA85D00363F12 /* Main.storyboard */; };
-		8D88D9D22BFDA85D00363F12 /* Play Downloader Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8D88D9D12BFDA85D00363F12 /* Play Downloader Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		8D88D9DC2BFDA85D00363F12 /* Play Downloader Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8D88D9DB2BFDA85D00363F12 /* Play Downloader Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		8D88D9E22BFDA85D00363F12 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9A52BFDA85A00363F12 /* Main.html */; };
-		8D88D9E32BFDA85D00363F12 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9A52BFDA85A00363F12 /* Main.html */; };
-		8D88D9E42BFDA85D00363F12 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9A72BFDA85A00363F12 /* Icon.png */; };
-		8D88D9E52BFDA85D00363F12 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9A72BFDA85A00363F12 /* Icon.png */; };
-		8D88D9E62BFDA85D00363F12 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9A82BFDA85A00363F12 /* Style.css */; };
-		8D88D9E72BFDA85D00363F12 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9A82BFDA85A00363F12 /* Style.css */; };
-		8D88D9E82BFDA85D00363F12 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9A92BFDA85A00363F12 /* Script.js */; };
-		8D88D9E92BFDA85D00363F12 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9A92BFDA85A00363F12 /* Script.js */; };
-		8D88D9EA2BFDA85D00363F12 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D88D9AA2BFDA85A00363F12 /* ViewController.swift */; };
-		8D88D9EB2BFDA85D00363F12 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D88D9AA2BFDA85A00363F12 /* ViewController.swift */; };
-		8D88D9EC2BFDA85D00363F12 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9AB2BFDA85D00363F12 /* Assets.xcassets */; };
-		8D88D9ED2BFDA85D00363F12 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8D88D9AB2BFDA85D00363F12 /* Assets.xcassets */; };
-		8D88D9EE2BFDA85D00363F12 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D88D9AD2BFDA85D00363F12 /* SafariWebExtensionHandler.swift */; };
-		8D88D9EF2BFDA85D00363F12 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D88D9AD2BFDA85D00363F12 /* SafariWebExtensionHandler.swift */; };
-		8D88DA072BFDA85F00363F12 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D88DA012BFDA85F00363F12 /* icon.png */; };
-		8D88DA082BFDA85F00363F12 /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 8D88DA022BFDA85F00363F12 /* popup.js */; };
-		8D88DA092BFDA85F00363F12 /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 8D88DA032BFDA85F00363F12 /* background.js */; };
-		8D88DA0A2BFDA85F00363F12 /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 8D88DA042BFDA85F00363F12 /* popup.html */; };
-		8D88DA0B2BFDA85F00363F12 /* Play Downloader in Resources */ = {isa = PBXBuildFile; fileRef = 8D88DA052BFDA85F00363F12 /* Play Downloader */; };
-		8D88DA0C2BFDA85F00363F12 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 8D88DA062BFDA85F00363F12 /* manifest.json */; };
-		8D88DA0D2BFDA85F00363F12 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D88DA012BFDA85F00363F12 /* icon.png */; };
-		8D88DA0E2BFDA85F00363F12 /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 8D88DA022BFDA85F00363F12 /* popup.js */; };
-		8D88DA0F2BFDA85F00363F12 /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 8D88DA032BFDA85F00363F12 /* background.js */; };
-		8D88DA102BFDA85F00363F12 /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 8D88DA042BFDA85F00363F12 /* popup.html */; };
-		8D88DA112BFDA85F00363F12 /* Play Downloader in Resources */ = {isa = PBXBuildFile; fileRef = 8D88DA052BFDA85F00363F12 /* Play Downloader */; };
-		8D88DA122BFDA85F00363F12 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 8D88DA062BFDA85F00363F12 /* manifest.json */; };
+		43A69A5E2C026A58008A87E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A69A5D2C026A58008A87E0 /* AppDelegate.swift */; };
+		43A69A602C026A58008A87E0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A69A5F2C026A58008A87E0 /* SceneDelegate.swift */; };
+		43A69A632C026A58008A87E0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A612C026A58008A87E0 /* LaunchScreen.storyboard */; };
+		43A69A662C026A58008A87E0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A642C026A58008A87E0 /* Main.storyboard */; };
+		43A69A6F2C026A58008A87E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A69A6E2C026A58008A87E0 /* AppDelegate.swift */; };
+		43A69A722C026A58008A87E0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A702C026A58008A87E0 /* Main.storyboard */; };
+		43A69A7A2C026A58008A87E0 /* Play Downloader Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 43A69A792C026A58008A87E0 /* Play Downloader Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		43A69A842C026A58008A87E0 /* Play Downloader Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 43A69A832C026A58008A87E0 /* Play Downloader Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		43A69A8A2C026A58008A87E0 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A4D2C026A55008A87E0 /* Main.html */; };
+		43A69A8B2C026A58008A87E0 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A4D2C026A55008A87E0 /* Main.html */; };
+		43A69A8C2C026A58008A87E0 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A4F2C026A55008A87E0 /* Icon.png */; };
+		43A69A8D2C026A58008A87E0 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A4F2C026A55008A87E0 /* Icon.png */; };
+		43A69A8E2C026A58008A87E0 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A502C026A55008A87E0 /* Style.css */; };
+		43A69A8F2C026A58008A87E0 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A502C026A55008A87E0 /* Style.css */; };
+		43A69A902C026A58008A87E0 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A512C026A55008A87E0 /* Script.js */; };
+		43A69A912C026A58008A87E0 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A512C026A55008A87E0 /* Script.js */; };
+		43A69A922C026A58008A87E0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A69A522C026A55008A87E0 /* ViewController.swift */; };
+		43A69A932C026A58008A87E0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A69A522C026A55008A87E0 /* ViewController.swift */; };
+		43A69A942C026A58008A87E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A532C026A58008A87E0 /* Assets.xcassets */; };
+		43A69A952C026A58008A87E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43A69A532C026A58008A87E0 /* Assets.xcassets */; };
+		43A69A962C026A58008A87E0 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A69A552C026A58008A87E0 /* SafariWebExtensionHandler.swift */; };
+		43A69A972C026A58008A87E0 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A69A552C026A58008A87E0 /* SafariWebExtensionHandler.swift */; };
+		43A69AAE2C026A60008A87E0 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A69AA92C026A60008A87E0 /* icon.png */; };
+		43A69AAF2C026A60008A87E0 /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 43A69AAA2C026A60008A87E0 /* popup.js */; };
+		43A69AB02C026A60008A87E0 /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 43A69AAB2C026A60008A87E0 /* background.js */; };
+		43A69AB12C026A60008A87E0 /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 43A69AAC2C026A60008A87E0 /* popup.html */; };
+		43A69AB22C026A60008A87E0 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 43A69AAD2C026A60008A87E0 /* manifest.json */; };
+		43A69AB32C026A60008A87E0 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A69AA92C026A60008A87E0 /* icon.png */; };
+		43A69AB42C026A60008A87E0 /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 43A69AAA2C026A60008A87E0 /* popup.js */; };
+		43A69AB52C026A60008A87E0 /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 43A69AAB2C026A60008A87E0 /* background.js */; };
+		43A69AB62C026A60008A87E0 /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 43A69AAC2C026A60008A87E0 /* popup.html */; };
+		43A69AB72C026A60008A87E0 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 43A69AAD2C026A60008A87E0 /* manifest.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		8D88D9D32BFDA85D00363F12 /* PBXContainerItemProxy */ = {
+		43A69A7B2C026A58008A87E0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8D88D99F2BFDA85900363F12 /* Project object */;
+			containerPortal = 43A69A472C026A55008A87E0 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 8D88D9D02BFDA85D00363F12;
+			remoteGlobalIDString = 43A69A782C026A58008A87E0;
 			remoteInfo = "Play Downloader Extension (iOS)";
 		};
-		8D88D9DD2BFDA85D00363F12 /* PBXContainerItemProxy */ = {
+		43A69A852C026A58008A87E0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8D88D99F2BFDA85900363F12 /* Project object */;
+			containerPortal = 43A69A472C026A55008A87E0 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 8D88D9DA2BFDA85D00363F12;
+			remoteGlobalIDString = 43A69A822C026A58008A87E0;
 			remoteInfo = "Play Downloader Extension (macOS)";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		8D88D9F52BFDA85D00363F12 /* Embed App Extensions */ = {
+		43A69A9D2C026A58008A87E0 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				8D88D9D22BFDA85D00363F12 /* Play Downloader Extension.appex in Embed App Extensions */,
+				43A69A7A2C026A58008A87E0 /* Play Downloader Extension.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8D88D9FC2BFDA85D00363F12 /* Embed App Extensions */ = {
+		43A69AA42C026A58008A87E0 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				8D88D9DC2BFDA85D00363F12 /* Play Downloader Extension.appex in Embed App Extensions */,
+				43A69A842C026A58008A87E0 /* Play Downloader Extension.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		8D88D9A62BFDA85A00363F12 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
-		8D88D9A72BFDA85A00363F12 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
-		8D88D9A82BFDA85A00363F12 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
-		8D88D9A92BFDA85A00363F12 /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
-		8D88D9AA2BFDA85A00363F12 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		8D88D9AB2BFDA85D00363F12 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		8D88D9AD2BFDA85D00363F12 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
-		8D88D9B22BFDA85D00363F12 /* Play Downloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Play Downloader.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		8D88D9B52BFDA85D00363F12 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		8D88D9B72BFDA85D00363F12 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		8D88D9BA2BFDA85D00363F12 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		8D88D9BD2BFDA85D00363F12 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		8D88D9BF2BFDA85D00363F12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8D88D9C42BFDA85D00363F12 /* Play Downloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Play Downloader.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		8D88D9C62BFDA85D00363F12 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		8D88D9C92BFDA85D00363F12 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		8D88D9CB2BFDA85D00363F12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8D88D9CC2BFDA85D00363F12 /* Play Downloader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Play Downloader.entitlements"; sourceTree = "<group>"; };
-		8D88D9D12BFDA85D00363F12 /* Play Downloader Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Play Downloader Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		8D88D9D62BFDA85D00363F12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8D88D9DB2BFDA85D00363F12 /* Play Downloader Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Play Downloader Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		8D88D9E02BFDA85D00363F12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8D88D9E12BFDA85D00363F12 /* Play Downloader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Play Downloader.entitlements"; sourceTree = "<group>"; };
-		8D88DA012BFDA85F00363F12 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = ../../icon.png; sourceTree = "<group>"; };
-		8D88DA022BFDA85F00363F12 /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = popup.js; path = ../../popup.js; sourceTree = "<group>"; };
-		8D88DA032BFDA85F00363F12 /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.js; path = ../../background.js; sourceTree = "<group>"; };
-		8D88DA042BFDA85F00363F12 /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = popup.html; path = ../../popup.html; sourceTree = "<group>"; };
-		8D88DA052BFDA85F00363F12 /* Play Downloader */ = {isa = PBXFileReference; lastKnownFileType = text; name = "Play Downloader"; sourceTree = SOURCE_ROOT; };
-		8D88DA062BFDA85F00363F12 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = ../../manifest.json; sourceTree = "<group>"; };
+		43A69A4E2C026A55008A87E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
+		43A69A4F2C026A55008A87E0 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		43A69A502C026A55008A87E0 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
+		43A69A512C026A55008A87E0 /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
+		43A69A522C026A55008A87E0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		43A69A532C026A58008A87E0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		43A69A552C026A58008A87E0 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		43A69A5A2C026A58008A87E0 /* Play Downloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Play Downloader.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		43A69A5D2C026A58008A87E0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		43A69A5F2C026A58008A87E0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		43A69A622C026A58008A87E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		43A69A652C026A58008A87E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		43A69A672C026A58008A87E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		43A69A6C2C026A58008A87E0 /* Play Downloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Play Downloader.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		43A69A6E2C026A58008A87E0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		43A69A712C026A58008A87E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		43A69A732C026A58008A87E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		43A69A742C026A58008A87E0 /* Play Downloader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Play Downloader.entitlements"; sourceTree = "<group>"; };
+		43A69A792C026A58008A87E0 /* Play Downloader Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Play Downloader Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		43A69A7E2C026A58008A87E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		43A69A832C026A58008A87E0 /* Play Downloader Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Play Downloader Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		43A69A882C026A58008A87E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		43A69A892C026A58008A87E0 /* Play Downloader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Play Downloader.entitlements"; sourceTree = "<group>"; };
+		43A69AA92C026A60008A87E0 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = ../../../src/icon.png; sourceTree = "<group>"; };
+		43A69AAA2C026A60008A87E0 /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = popup.js; path = ../../../src/popup.js; sourceTree = "<group>"; };
+		43A69AAB2C026A60008A87E0 /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.js; path = ../../../src/background.js; sourceTree = "<group>"; };
+		43A69AAC2C026A60008A87E0 /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = popup.html; path = ../../../src/popup.html; sourceTree = "<group>"; };
+		43A69AAD2C026A60008A87E0 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = ../../../src/manifest.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8D88D9AF2BFDA85D00363F12 /* Frameworks */ = {
+		43A69A572C026A58008A87E0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8D88D9C12BFDA85D00363F12 /* Frameworks */ = {
+		43A69A692C026A58008A87E0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8D88D9CE2BFDA85D00363F12 /* Frameworks */ = {
+		43A69A762C026A58008A87E0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8D88D9D82BFDA85D00363F12 /* Frameworks */ = {
+		43A69A802C026A58008A87E0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -149,109 +146,108 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8D88D99E2BFDA85900363F12 = {
+		43A69A462C026A55008A87E0 = {
 			isa = PBXGroup;
 			children = (
-				8D88D9A32BFDA85A00363F12 /* Shared (App) */,
-				8D88D9AC2BFDA85D00363F12 /* Shared (Extension) */,
-				8D88D9B42BFDA85D00363F12 /* iOS (App) */,
-				8D88D9C52BFDA85D00363F12 /* macOS (App) */,
-				8D88D9D52BFDA85D00363F12 /* iOS (Extension) */,
-				8D88D9DF2BFDA85D00363F12 /* macOS (Extension) */,
-				8D88D9B32BFDA85D00363F12 /* Products */,
+				43A69A4B2C026A55008A87E0 /* Shared (App) */,
+				43A69A542C026A58008A87E0 /* Shared (Extension) */,
+				43A69A5C2C026A58008A87E0 /* iOS (App) */,
+				43A69A6D2C026A58008A87E0 /* macOS (App) */,
+				43A69A7D2C026A58008A87E0 /* iOS (Extension) */,
+				43A69A872C026A58008A87E0 /* macOS (Extension) */,
+				43A69A5B2C026A58008A87E0 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		8D88D9A32BFDA85A00363F12 /* Shared (App) */ = {
+		43A69A4B2C026A55008A87E0 /* Shared (App) */ = {
 			isa = PBXGroup;
 			children = (
-				8D88D9AA2BFDA85A00363F12 /* ViewController.swift */,
-				8D88D9AB2BFDA85D00363F12 /* Assets.xcassets */,
-				8D88D9A42BFDA85A00363F12 /* Resources */,
+				43A69A522C026A55008A87E0 /* ViewController.swift */,
+				43A69A532C026A58008A87E0 /* Assets.xcassets */,
+				43A69A4C2C026A55008A87E0 /* Resources */,
 			);
 			path = "Shared (App)";
 			sourceTree = "<group>";
 		};
-		8D88D9A42BFDA85A00363F12 /* Resources */ = {
+		43A69A4C2C026A55008A87E0 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				8D88D9A52BFDA85A00363F12 /* Main.html */,
-				8D88D9A72BFDA85A00363F12 /* Icon.png */,
-				8D88D9A82BFDA85A00363F12 /* Style.css */,
-				8D88D9A92BFDA85A00363F12 /* Script.js */,
+				43A69A4D2C026A55008A87E0 /* Main.html */,
+				43A69A4F2C026A55008A87E0 /* Icon.png */,
+				43A69A502C026A55008A87E0 /* Style.css */,
+				43A69A512C026A55008A87E0 /* Script.js */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		8D88D9AC2BFDA85D00363F12 /* Shared (Extension) */ = {
+		43A69A542C026A58008A87E0 /* Shared (Extension) */ = {
 			isa = PBXGroup;
 			children = (
-				8D88DA002BFDA85F00363F12 /* Resources */,
-				8D88D9AD2BFDA85D00363F12 /* SafariWebExtensionHandler.swift */,
+				43A69AA82C026A60008A87E0 /* Resources */,
+				43A69A552C026A58008A87E0 /* SafariWebExtensionHandler.swift */,
 			);
 			path = "Shared (Extension)";
 			sourceTree = "<group>";
 		};
-		8D88D9B32BFDA85D00363F12 /* Products */ = {
+		43A69A5B2C026A58008A87E0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D88D9B22BFDA85D00363F12 /* Play Downloader.app */,
-				8D88D9C42BFDA85D00363F12 /* Play Downloader.app */,
-				8D88D9D12BFDA85D00363F12 /* Play Downloader Extension.appex */,
-				8D88D9DB2BFDA85D00363F12 /* Play Downloader Extension.appex */,
+				43A69A5A2C026A58008A87E0 /* Play Downloader.app */,
+				43A69A6C2C026A58008A87E0 /* Play Downloader.app */,
+				43A69A792C026A58008A87E0 /* Play Downloader Extension.appex */,
+				43A69A832C026A58008A87E0 /* Play Downloader Extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8D88D9B42BFDA85D00363F12 /* iOS (App) */ = {
+		43A69A5C2C026A58008A87E0 /* iOS (App) */ = {
 			isa = PBXGroup;
 			children = (
-				8D88D9B52BFDA85D00363F12 /* AppDelegate.swift */,
-				8D88D9B72BFDA85D00363F12 /* SceneDelegate.swift */,
-				8D88D9B92BFDA85D00363F12 /* LaunchScreen.storyboard */,
-				8D88D9BC2BFDA85D00363F12 /* Main.storyboard */,
-				8D88D9BF2BFDA85D00363F12 /* Info.plist */,
+				43A69A5D2C026A58008A87E0 /* AppDelegate.swift */,
+				43A69A5F2C026A58008A87E0 /* SceneDelegate.swift */,
+				43A69A612C026A58008A87E0 /* LaunchScreen.storyboard */,
+				43A69A642C026A58008A87E0 /* Main.storyboard */,
+				43A69A672C026A58008A87E0 /* Info.plist */,
 			);
 			path = "iOS (App)";
 			sourceTree = "<group>";
 		};
-		8D88D9C52BFDA85D00363F12 /* macOS (App) */ = {
+		43A69A6D2C026A58008A87E0 /* macOS (App) */ = {
 			isa = PBXGroup;
 			children = (
-				8D88D9C62BFDA85D00363F12 /* AppDelegate.swift */,
-				8D88D9C82BFDA85D00363F12 /* Main.storyboard */,
-				8D88D9CB2BFDA85D00363F12 /* Info.plist */,
-				8D88D9CC2BFDA85D00363F12 /* Play Downloader.entitlements */,
+				43A69A6E2C026A58008A87E0 /* AppDelegate.swift */,
+				43A69A702C026A58008A87E0 /* Main.storyboard */,
+				43A69A732C026A58008A87E0 /* Info.plist */,
+				43A69A742C026A58008A87E0 /* Play Downloader.entitlements */,
 			);
 			path = "macOS (App)";
 			sourceTree = "<group>";
 		};
-		8D88D9D52BFDA85D00363F12 /* iOS (Extension) */ = {
+		43A69A7D2C026A58008A87E0 /* iOS (Extension) */ = {
 			isa = PBXGroup;
 			children = (
-				8D88D9D62BFDA85D00363F12 /* Info.plist */,
+				43A69A7E2C026A58008A87E0 /* Info.plist */,
 			);
 			path = "iOS (Extension)";
 			sourceTree = "<group>";
 		};
-		8D88D9DF2BFDA85D00363F12 /* macOS (Extension) */ = {
+		43A69A872C026A58008A87E0 /* macOS (Extension) */ = {
 			isa = PBXGroup;
 			children = (
-				8D88D9E02BFDA85D00363F12 /* Info.plist */,
-				8D88D9E12BFDA85D00363F12 /* Play Downloader.entitlements */,
+				43A69A882C026A58008A87E0 /* Info.plist */,
+				43A69A892C026A58008A87E0 /* Play Downloader.entitlements */,
 			);
 			path = "macOS (Extension)";
 			sourceTree = "<group>";
 		};
-		8D88DA002BFDA85F00363F12 /* Resources */ = {
+		43A69AA82C026A60008A87E0 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				8D88DA012BFDA85F00363F12 /* icon.png */,
-				8D88DA022BFDA85F00363F12 /* popup.js */,
-				8D88DA032BFDA85F00363F12 /* background.js */,
-				8D88DA042BFDA85F00363F12 /* popup.html */,
-				8D88DA052BFDA85F00363F12 /* Play Downloader */,
-				8D88DA062BFDA85F00363F12 /* manifest.json */,
+				43A69AA92C026A60008A87E0 /* icon.png */,
+				43A69AAA2C026A60008A87E0 /* popup.js */,
+				43A69AAB2C026A60008A87E0 /* background.js */,
+				43A69AAC2C026A60008A87E0 /* popup.html */,
+				43A69AAD2C026A60008A87E0 /* manifest.json */,
 			);
 			name = Resources;
 			path = "Shared (Extension)";
@@ -260,51 +256,51 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D88D9B12BFDA85D00363F12 /* Play Downloader (iOS) */ = {
+		43A69A592C026A58008A87E0 /* Play Downloader (iOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8D88D9F62BFDA85D00363F12 /* Build configuration list for PBXNativeTarget "Play Downloader (iOS)" */;
+			buildConfigurationList = 43A69A9E2C026A58008A87E0 /* Build configuration list for PBXNativeTarget "Play Downloader (iOS)" */;
 			buildPhases = (
-				8D88D9AE2BFDA85D00363F12 /* Sources */,
-				8D88D9AF2BFDA85D00363F12 /* Frameworks */,
-				8D88D9B02BFDA85D00363F12 /* Resources */,
-				8D88D9F52BFDA85D00363F12 /* Embed App Extensions */,
+				43A69A562C026A58008A87E0 /* Sources */,
+				43A69A572C026A58008A87E0 /* Frameworks */,
+				43A69A582C026A58008A87E0 /* Resources */,
+				43A69A9D2C026A58008A87E0 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				8D88D9D42BFDA85D00363F12 /* PBXTargetDependency */,
+				43A69A7C2C026A58008A87E0 /* PBXTargetDependency */,
 			);
 			name = "Play Downloader (iOS)";
 			productName = "Play Downloader (iOS)";
-			productReference = 8D88D9B22BFDA85D00363F12 /* Play Downloader.app */;
+			productReference = 43A69A5A2C026A58008A87E0 /* Play Downloader.app */;
 			productType = "com.apple.product-type.application";
 		};
-		8D88D9C32BFDA85D00363F12 /* Play Downloader (macOS) */ = {
+		43A69A6B2C026A58008A87E0 /* Play Downloader (macOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8D88D9FD2BFDA85D00363F12 /* Build configuration list for PBXNativeTarget "Play Downloader (macOS)" */;
+			buildConfigurationList = 43A69AA52C026A58008A87E0 /* Build configuration list for PBXNativeTarget "Play Downloader (macOS)" */;
 			buildPhases = (
-				8D88D9C02BFDA85D00363F12 /* Sources */,
-				8D88D9C12BFDA85D00363F12 /* Frameworks */,
-				8D88D9C22BFDA85D00363F12 /* Resources */,
-				8D88D9FC2BFDA85D00363F12 /* Embed App Extensions */,
+				43A69A682C026A58008A87E0 /* Sources */,
+				43A69A692C026A58008A87E0 /* Frameworks */,
+				43A69A6A2C026A58008A87E0 /* Resources */,
+				43A69AA42C026A58008A87E0 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				8D88D9DE2BFDA85D00363F12 /* PBXTargetDependency */,
+				43A69A862C026A58008A87E0 /* PBXTargetDependency */,
 			);
 			name = "Play Downloader (macOS)";
 			productName = "Play Downloader (macOS)";
-			productReference = 8D88D9C42BFDA85D00363F12 /* Play Downloader.app */;
+			productReference = 43A69A6C2C026A58008A87E0 /* Play Downloader.app */;
 			productType = "com.apple.product-type.application";
 		};
-		8D88D9D02BFDA85D00363F12 /* Play Downloader Extension (iOS) */ = {
+		43A69A782C026A58008A87E0 /* Play Downloader Extension (iOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8D88D9F22BFDA85D00363F12 /* Build configuration list for PBXNativeTarget "Play Downloader Extension (iOS)" */;
+			buildConfigurationList = 43A69A9A2C026A58008A87E0 /* Build configuration list for PBXNativeTarget "Play Downloader Extension (iOS)" */;
 			buildPhases = (
-				8D88D9CD2BFDA85D00363F12 /* Sources */,
-				8D88D9CE2BFDA85D00363F12 /* Frameworks */,
-				8D88D9CF2BFDA85D00363F12 /* Resources */,
+				43A69A752C026A58008A87E0 /* Sources */,
+				43A69A762C026A58008A87E0 /* Frameworks */,
+				43A69A772C026A58008A87E0 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -312,16 +308,16 @@
 			);
 			name = "Play Downloader Extension (iOS)";
 			productName = "Play Downloader Extension (iOS)";
-			productReference = 8D88D9D12BFDA85D00363F12 /* Play Downloader Extension.appex */;
+			productReference = 43A69A792C026A58008A87E0 /* Play Downloader Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		8D88D9DA2BFDA85D00363F12 /* Play Downloader Extension (macOS) */ = {
+		43A69A822C026A58008A87E0 /* Play Downloader Extension (macOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8D88D9F92BFDA85D00363F12 /* Build configuration list for PBXNativeTarget "Play Downloader Extension (macOS)" */;
+			buildConfigurationList = 43A69AA12C026A58008A87E0 /* Build configuration list for PBXNativeTarget "Play Downloader Extension (macOS)" */;
 			buildPhases = (
-				8D88D9D72BFDA85D00363F12 /* Sources */,
-				8D88D9D82BFDA85D00363F12 /* Frameworks */,
-				8D88D9D92BFDA85D00363F12 /* Resources */,
+				43A69A7F2C026A58008A87E0 /* Sources */,
+				43A69A802C026A58008A87E0 /* Frameworks */,
+				43A69A812C026A58008A87E0 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -329,190 +325,188 @@
 			);
 			name = "Play Downloader Extension (macOS)";
 			productName = "Play Downloader Extension (macOS)";
-			productReference = 8D88D9DB2BFDA85D00363F12 /* Play Downloader Extension.appex */;
+			productReference = 43A69A832C026A58008A87E0 /* Play Downloader Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		8D88D99F2BFDA85900363F12 /* Project object */ = {
+		43A69A472C026A55008A87E0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1320;
-				LastUpgradeCheck = 1320;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					8D88D9B12BFDA85D00363F12 = {
-						CreatedOnToolsVersion = 13.2.1;
+					43A69A592C026A58008A87E0 = {
+						CreatedOnToolsVersion = 15.0.1;
 					};
-					8D88D9C32BFDA85D00363F12 = {
-						CreatedOnToolsVersion = 13.2.1;
+					43A69A6B2C026A58008A87E0 = {
+						CreatedOnToolsVersion = 15.0.1;
 					};
-					8D88D9D02BFDA85D00363F12 = {
-						CreatedOnToolsVersion = 13.2.1;
+					43A69A782C026A58008A87E0 = {
+						CreatedOnToolsVersion = 15.0.1;
 					};
-					8D88D9DA2BFDA85D00363F12 = {
-						CreatedOnToolsVersion = 13.2.1;
+					43A69A822C026A58008A87E0 = {
+						CreatedOnToolsVersion = 15.0.1;
 					};
 				};
 			};
-			buildConfigurationList = 8D88D9A22BFDA85900363F12 /* Build configuration list for PBXProject "Play Downloader" */;
-			compatibilityVersion = "Xcode 13.0";
+			buildConfigurationList = 43A69A4A2C026A55008A87E0 /* Build configuration list for PBXProject "Play Downloader" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 8D88D99E2BFDA85900363F12;
-			productRefGroup = 8D88D9B32BFDA85D00363F12 /* Products */;
+			mainGroup = 43A69A462C026A55008A87E0;
+			productRefGroup = 43A69A5B2C026A58008A87E0 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D88D9B12BFDA85D00363F12 /* Play Downloader (iOS) */,
-				8D88D9C32BFDA85D00363F12 /* Play Downloader (macOS) */,
-				8D88D9D02BFDA85D00363F12 /* Play Downloader Extension (iOS) */,
-				8D88D9DA2BFDA85D00363F12 /* Play Downloader Extension (macOS) */,
+				43A69A592C026A58008A87E0 /* Play Downloader (iOS) */,
+				43A69A6B2C026A58008A87E0 /* Play Downloader (macOS) */,
+				43A69A782C026A58008A87E0 /* Play Downloader Extension (iOS) */,
+				43A69A822C026A58008A87E0 /* Play Downloader Extension (macOS) */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		8D88D9B02BFDA85D00363F12 /* Resources */ = {
+		43A69A582C026A58008A87E0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D88D9E42BFDA85D00363F12 /* Icon.png in Resources */,
-				8D88D9BB2BFDA85D00363F12 /* LaunchScreen.storyboard in Resources */,
-				8D88D9E22BFDA85D00363F12 /* Main.html in Resources */,
-				8D88D9E82BFDA85D00363F12 /* Script.js in Resources */,
-				8D88D9EC2BFDA85D00363F12 /* Assets.xcassets in Resources */,
-				8D88D9BE2BFDA85D00363F12 /* Main.storyboard in Resources */,
-				8D88D9E62BFDA85D00363F12 /* Style.css in Resources */,
+				43A69A8C2C026A58008A87E0 /* Icon.png in Resources */,
+				43A69A632C026A58008A87E0 /* LaunchScreen.storyboard in Resources */,
+				43A69A8A2C026A58008A87E0 /* Main.html in Resources */,
+				43A69A902C026A58008A87E0 /* Script.js in Resources */,
+				43A69A942C026A58008A87E0 /* Assets.xcassets in Resources */,
+				43A69A662C026A58008A87E0 /* Main.storyboard in Resources */,
+				43A69A8E2C026A58008A87E0 /* Style.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8D88D9C22BFDA85D00363F12 /* Resources */ = {
+		43A69A6A2C026A58008A87E0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D88D9E52BFDA85D00363F12 /* Icon.png in Resources */,
-				8D88D9E72BFDA85D00363F12 /* Style.css in Resources */,
-				8D88D9CA2BFDA85D00363F12 /* Main.storyboard in Resources */,
-				8D88D9E92BFDA85D00363F12 /* Script.js in Resources */,
-				8D88D9ED2BFDA85D00363F12 /* Assets.xcassets in Resources */,
-				8D88D9E32BFDA85D00363F12 /* Main.html in Resources */,
+				43A69A8D2C026A58008A87E0 /* Icon.png in Resources */,
+				43A69A8F2C026A58008A87E0 /* Style.css in Resources */,
+				43A69A722C026A58008A87E0 /* Main.storyboard in Resources */,
+				43A69A912C026A58008A87E0 /* Script.js in Resources */,
+				43A69A952C026A58008A87E0 /* Assets.xcassets in Resources */,
+				43A69A8B2C026A58008A87E0 /* Main.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8D88D9CF2BFDA85D00363F12 /* Resources */ = {
+		43A69A772C026A58008A87E0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D88DA0D2BFDA85F00363F12 /* icon.png in Resources */,
-				8D88DA112BFDA85F00363F12 /* Play Downloader in Resources */,
-				8D88DA102BFDA85F00363F12 /* popup.html in Resources */,
-				8D88DA0F2BFDA85F00363F12 /* background.js in Resources */,
-				8D88DA122BFDA85F00363F12 /* manifest.json in Resources */,
-				8D88DA0E2BFDA85F00363F12 /* popup.js in Resources */,
+				43A69AB32C026A60008A87E0 /* icon.png in Resources */,
+				43A69AB62C026A60008A87E0 /* popup.html in Resources */,
+				43A69AB72C026A60008A87E0 /* manifest.json in Resources */,
+				43A69AB52C026A60008A87E0 /* background.js in Resources */,
+				43A69AB42C026A60008A87E0 /* popup.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8D88D9D92BFDA85D00363F12 /* Resources */ = {
+		43A69A812C026A58008A87E0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D88DA072BFDA85F00363F12 /* icon.png in Resources */,
-				8D88DA0B2BFDA85F00363F12 /* Play Downloader in Resources */,
-				8D88DA0A2BFDA85F00363F12 /* popup.html in Resources */,
-				8D88DA092BFDA85F00363F12 /* background.js in Resources */,
-				8D88DA0C2BFDA85F00363F12 /* manifest.json in Resources */,
-				8D88DA082BFDA85F00363F12 /* popup.js in Resources */,
+				43A69AAE2C026A60008A87E0 /* icon.png in Resources */,
+				43A69AB12C026A60008A87E0 /* popup.html in Resources */,
+				43A69AB22C026A60008A87E0 /* manifest.json in Resources */,
+				43A69AB02C026A60008A87E0 /* background.js in Resources */,
+				43A69AAF2C026A60008A87E0 /* popup.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8D88D9AE2BFDA85D00363F12 /* Sources */ = {
+		43A69A562C026A58008A87E0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D88D9EA2BFDA85D00363F12 /* ViewController.swift in Sources */,
-				8D88D9B62BFDA85D00363F12 /* AppDelegate.swift in Sources */,
-				8D88D9B82BFDA85D00363F12 /* SceneDelegate.swift in Sources */,
+				43A69A922C026A58008A87E0 /* ViewController.swift in Sources */,
+				43A69A5E2C026A58008A87E0 /* AppDelegate.swift in Sources */,
+				43A69A602C026A58008A87E0 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8D88D9C02BFDA85D00363F12 /* Sources */ = {
+		43A69A682C026A58008A87E0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D88D9EB2BFDA85D00363F12 /* ViewController.swift in Sources */,
-				8D88D9C72BFDA85D00363F12 /* AppDelegate.swift in Sources */,
+				43A69A932C026A58008A87E0 /* ViewController.swift in Sources */,
+				43A69A6F2C026A58008A87E0 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8D88D9CD2BFDA85D00363F12 /* Sources */ = {
+		43A69A752C026A58008A87E0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D88D9EE2BFDA85D00363F12 /* SafariWebExtensionHandler.swift in Sources */,
+				43A69A962C026A58008A87E0 /* SafariWebExtensionHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8D88D9D72BFDA85D00363F12 /* Sources */ = {
+		43A69A7F2C026A58008A87E0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D88D9EF2BFDA85D00363F12 /* SafariWebExtensionHandler.swift in Sources */,
+				43A69A972C026A58008A87E0 /* SafariWebExtensionHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		8D88D9D42BFDA85D00363F12 /* PBXTargetDependency */ = {
+		43A69A7C2C026A58008A87E0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8D88D9D02BFDA85D00363F12 /* Play Downloader Extension (iOS) */;
-			targetProxy = 8D88D9D32BFDA85D00363F12 /* PBXContainerItemProxy */;
+			target = 43A69A782C026A58008A87E0 /* Play Downloader Extension (iOS) */;
+			targetProxy = 43A69A7B2C026A58008A87E0 /* PBXContainerItemProxy */;
 		};
-		8D88D9DE2BFDA85D00363F12 /* PBXTargetDependency */ = {
+		43A69A862C026A58008A87E0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8D88D9DA2BFDA85D00363F12 /* Play Downloader Extension (macOS) */;
-			targetProxy = 8D88D9DD2BFDA85D00363F12 /* PBXContainerItemProxy */;
+			target = 43A69A822C026A58008A87E0 /* Play Downloader Extension (macOS) */;
+			targetProxy = 43A69A852C026A58008A87E0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		8D88D9A52BFDA85A00363F12 /* Main.html */ = {
+		43A69A4D2C026A55008A87E0 /* Main.html */ = {
 			isa = PBXVariantGroup;
 			children = (
-				8D88D9A62BFDA85A00363F12 /* Base */,
+				43A69A4E2C026A55008A87E0 /* Base */,
 			);
 			name = Main.html;
 			sourceTree = "<group>";
 		};
-		8D88D9B92BFDA85D00363F12 /* LaunchScreen.storyboard */ = {
+		43A69A612C026A58008A87E0 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				8D88D9BA2BFDA85D00363F12 /* Base */,
+				43A69A622C026A58008A87E0 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
-		8D88D9BC2BFDA85D00363F12 /* Main.storyboard */ = {
+		43A69A642C026A58008A87E0 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				8D88D9BD2BFDA85D00363F12 /* Base */,
+				43A69A652C026A58008A87E0 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
-		8D88D9C82BFDA85D00363F12 /* Main.storyboard */ = {
+		43A69A702C026A58008A87E0 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				8D88D9C92BFDA85D00363F12 /* Base */,
+				43A69A712C026A58008A87E0 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -520,14 +514,14 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		8D88D9F02BFDA85D00363F12 /* Debug */ = {
+		43A69A982C026A58008A87E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -557,7 +551,8 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -571,22 +566,23 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
-		8D88D9F12BFDA85D00363F12 /* Release */ = {
+		43A69A992C026A58008A87E0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -616,7 +612,8 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -624,14 +621,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
 		};
-		8D88D9F32BFDA85D00363F12 /* Debug */ = {
+		43A69A9B2C026A58008A87E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -661,7 +658,7 @@
 			};
 			name = Debug;
 		};
-		8D88D9F42BFDA85D00363F12 /* Release */ = {
+		43A69A9C2C026A58008A87E0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -692,7 +689,7 @@
 			};
 			name = Release;
 		};
-		8D88D9F72BFDA85D00363F12 /* Debug */ = {
+		43A69A9F2C026A58008A87E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -729,7 +726,7 @@
 			};
 			name = Debug;
 		};
-		8D88D9F82BFDA85D00363F12 /* Release */ = {
+		43A69AA02C026A58008A87E0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -767,7 +764,7 @@
 			};
 			name = Release;
 		};
-		8D88D9FA2BFDA85D00363F12 /* Debug */ = {
+		43A69AA22C026A58008A87E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Play Downloader.entitlements";
@@ -798,7 +795,7 @@
 			};
 			name = Debug;
 		};
-		8D88D9FB2BFDA85D00363F12 /* Release */ = {
+		43A69AA32C026A58008A87E0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Play Downloader.entitlements";
@@ -829,7 +826,7 @@
 			};
 			name = Release;
 		};
-		8D88D9FE2BFDA85D00363F12 /* Debug */ = {
+		43A69AA62C026A58008A87E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -864,7 +861,7 @@
 			};
 			name = Debug;
 		};
-		8D88D9FF2BFDA85D00363F12 /* Release */ = {
+		43A69AA72C026A58008A87E0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -902,52 +899,52 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8D88D9A22BFDA85900363F12 /* Build configuration list for PBXProject "Play Downloader" */ = {
+		43A69A4A2C026A55008A87E0 /* Build configuration list for PBXProject "Play Downloader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8D88D9F02BFDA85D00363F12 /* Debug */,
-				8D88D9F12BFDA85D00363F12 /* Release */,
+				43A69A982C026A58008A87E0 /* Debug */,
+				43A69A992C026A58008A87E0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8D88D9F22BFDA85D00363F12 /* Build configuration list for PBXNativeTarget "Play Downloader Extension (iOS)" */ = {
+		43A69A9A2C026A58008A87E0 /* Build configuration list for PBXNativeTarget "Play Downloader Extension (iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8D88D9F32BFDA85D00363F12 /* Debug */,
-				8D88D9F42BFDA85D00363F12 /* Release */,
+				43A69A9B2C026A58008A87E0 /* Debug */,
+				43A69A9C2C026A58008A87E0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8D88D9F62BFDA85D00363F12 /* Build configuration list for PBXNativeTarget "Play Downloader (iOS)" */ = {
+		43A69A9E2C026A58008A87E0 /* Build configuration list for PBXNativeTarget "Play Downloader (iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8D88D9F72BFDA85D00363F12 /* Debug */,
-				8D88D9F82BFDA85D00363F12 /* Release */,
+				43A69A9F2C026A58008A87E0 /* Debug */,
+				43A69AA02C026A58008A87E0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8D88D9F92BFDA85D00363F12 /* Build configuration list for PBXNativeTarget "Play Downloader Extension (macOS)" */ = {
+		43A69AA12C026A58008A87E0 /* Build configuration list for PBXNativeTarget "Play Downloader Extension (macOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8D88D9FA2BFDA85D00363F12 /* Debug */,
-				8D88D9FB2BFDA85D00363F12 /* Release */,
+				43A69AA22C026A58008A87E0 /* Debug */,
+				43A69AA32C026A58008A87E0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8D88D9FD2BFDA85D00363F12 /* Build configuration list for PBXNativeTarget "Play Downloader (macOS)" */ = {
+		43A69AA52C026A58008A87E0 /* Build configuration list for PBXNativeTarget "Play Downloader (macOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8D88D9FE2BFDA85D00363F12 /* Debug */,
-				8D88D9FF2BFDA85D00363F12 /* Release */,
+				43A69AA62C026A58008A87E0 /* Debug */,
+				43A69AA72C026A58008A87E0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 8D88D99F2BFDA85900363F12 /* Project object */;
+	rootObject = 43A69A472C026A55008A87E0 /* Project object */;
 }

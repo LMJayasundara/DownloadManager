@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  Shared (App)
 //
-//  Created by VEGA Innovations on 2024-05-22.
+//  Created by Anka on 5/25/24.
 //
 
 import WebKit
@@ -49,7 +49,11 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
             }
 
             DispatchQueue.main.async {
-                webView.evaluateJavaScript("show('mac', \(state.isEnabled))")
+                if #available(macOS 13, *) {
+                    webView.evaluateJavaScript("show('mac', \(state.isEnabled), true)")
+                } else {
+                    webView.evaluateJavaScript("show('mac', \(state.isEnabled), false)")
+                }
             }
         }
 #endif
@@ -58,7 +62,7 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
 #if os(macOS)
         if (message.body as! String != "open-preferences") {
-            return;
+            return
         }
 
         SFSafariApplication.showPreferencesForExtension(withIdentifier: extensionBundleIdentifier) { error in
@@ -68,7 +72,7 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
             }
 
             DispatchQueue.main.async {
-                NSApplication.shared.terminate(nil)
+                NSApp.terminate(self)
             }
         }
 #endif
