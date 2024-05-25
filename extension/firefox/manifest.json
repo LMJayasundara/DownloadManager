@@ -4,7 +4,7 @@
     "version": "1.0",
     "description": "Play Downloader Extension",
     "icons": {
-        "48": "icon.png"
+        "512": "icon.png"
     },
     "action": {
         "default_popup": "popup.html",
@@ -14,13 +14,18 @@
         "cookies",
         "storage",
         "tabs",
-        "scripting"
+        "activeTab"
     ],
     "host_permissions": [
         "*://*.youtube.com/*",
         "<all_urls>"
     ],
     "background": {
-        "service_worker": "background.js"
+        "scripts": ["background.js"]
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "play@downloader.com"
+        }
     }
 }
