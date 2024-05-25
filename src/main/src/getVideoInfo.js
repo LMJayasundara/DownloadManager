@@ -1,7 +1,7 @@
 const ytpl = require('ytpl');
 // const ytdl = require('ytdl-core');
 const ytdl = require("@distube/ytdl-core");
-const { v1 } = require("node-tiklydown");
+const { v2 } = require("node-tiklydown");
 const fs = require('fs');
 
 export async function YoutubeVideoDetails(url, format, quality, filePath) {
@@ -33,22 +33,25 @@ export async function YoutubeVideoDetails(url, format, quality, filePath) {
 
 export async function TikTokVideoDetails(url, format, quality, defaultAuthor, defaultThumbnail) {
   try {
-    const info = await v1(url);
+    const info = await v2(url);
+    console.log(info.result);
     return {
-      id: info.id.toString() + format,
-      title: info.title,
+      id: urlHash(url) + format,
+      title: info.result.desc,
       url: url,
       format: format,
       quality: quality,
       date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
       type: 'tiktok',
-      author: info.author.name,
+      author: info.result.author.nickname,
       description: '',
       tags: [],
-      authorPhoto: info.author.avatar || defaultAuthor,
-      thumbnailUrl: info.video.cover || defaultThumbnail
+      authorPhoto: info.result.author.avatar || defaultAuthor,
+      thumbnailUrl: info.result.video ? info.result.video.cover : defaultThumbnail
+
     };
   } catch (error) {
+    console.log(error);
     // console.error('Error fetching TikTok video details:', error);
     // return null;
     throw new Error("Failed to Fetch Video Details");

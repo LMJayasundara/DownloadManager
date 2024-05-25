@@ -12,7 +12,7 @@ import util from 'util';
 import { autoUpdater, AppUpdater } from "electron-updater";
 import ProgressBar from 'electron-progressbar';
 // const { v1 } = require("tiklydown-sanzy");
-const { v1 } = require("node-tiklydown");
+const { v2 } = require("node-tiklydown");
 const { DownloaderHelper } = require('node-downloader-helper');
 import axios from 'axios';
 import ffmpeg from 'fluent-ffmpeg';
@@ -524,9 +524,8 @@ app.whenReady().then(async () => {
 
   async function validTikTokUrl(url) {
     try {
-      const data = await v1(url);
-      console.log("yyyyyyyyyyyyyyyy:", data);
-      if (data.video && data.video.noWatermark) {
+      const data = await v2(url);
+      if (data.status === 200) {
         return true;
       } else {
         console.log("TikTok URL is valid but no watermark-free version available.");
@@ -906,19 +905,18 @@ app.whenReady().then(async () => {
     }
 
     async start() {
-      const data = await v1(this.url);
-      console.log("xxxxxxxxxxxxx", data);
+      const data = await v2(this.url);
       if (this.isDownloading) {
         console.log(`Download for video ID ${this.videoId} is already in progress.`);
         return;
       }
       if (this.format === "mp4") {
-        this.dataurl = data.video.noWatermark;
+        this.dataurl = data.result.video1;
         this.outputFilePath = path.join(this.directoryPath, `${this.videoId}.${this.format}`);
         this.tempFilePath = path.join(this.directoryPath, `${this.videoId}.temp.${this.format}`);
       }
       if (this.format === "mp3") {
-        this.dataurl = data.music.play_url;
+        this.dataurl = data.result.music;
         this.outputFilePath = path.join(this.directoryPath, `Audio/${this.videoId}.${this.format}`);
         this.tempFilePath = path.join(this.directoryPath, `${this.videoId}.temp.${this.format}`);
       } else {
