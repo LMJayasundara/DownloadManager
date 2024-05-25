@@ -1,0 +1,34 @@
+name: Convert Chrome Extension to Safari Extension
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  convert:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Convert extension to Safari
+      run: |
+        xcode-select --install
+        xcrun safari-web-extension-converter src --project-location safari_extension --app-name "My Safari Extension"
+
+    - name: Zip the converted extension
+      run: zip -r safari-extension.zip safari_extension
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: safari-extension
+        path: safari-extension.zip

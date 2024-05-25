@@ -11,8 +11,8 @@ import stream from 'stream';
 import util from 'util';
 import { autoUpdater, AppUpdater } from "electron-updater";
 import ProgressBar from 'electron-progressbar';
-// const { v1 } = require("node-tiklydown");
-const { v1 } = require("tiklydown-sanzy");
+// const { v1 } = require("tiklydown-sanzy");
+const { v1 } = require("node-tiklydown");
 const { DownloaderHelper } = require('node-downloader-helper');
 import axios from 'axios';
 import ffmpeg from 'fluent-ffmpeg';
@@ -525,6 +525,7 @@ app.whenReady().then(async () => {
   async function validTikTokUrl(url) {
     try {
       const data = await v1(url);
+      console.log("yyyyyyyyyyyyyyyy:", data);
       if (data.video && data.video.noWatermark) {
         return true;
       } else {
@@ -906,6 +907,7 @@ app.whenReady().then(async () => {
 
     async start() {
       const data = await v1(this.url);
+      console.log("xxxxxxxxxxxxx", data);
       if (this.isDownloading) {
         console.log(`Download for video ID ${this.videoId} is already in progress.`);
         return;
