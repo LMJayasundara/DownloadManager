@@ -13,6 +13,7 @@ import ProgressBar from 'electron-progressbar';
 const { v2 } = require("node-tiklydown");
 const { DownloaderHelper } = require('node-downloader-helper');
 import axios from 'axios';
+import internetAvailable from 'internet-available';
 import ffmpeg from 'fluent-ffmpeg';
 
 import ffprobePath from 'ffprobe-static'
@@ -36,6 +37,7 @@ let defaultThumbnail = null, defaultAuthor = null;
 let logoutTimer = null;
 let loginStatus = false;
 const express = require('express');
+const cors = require('cors');
 const net = require('net');
 
 let expressApp;
@@ -64,12 +66,21 @@ socket.on('disconnect', () => {
 
 function startExpressServer(port) {
   expressApp = express();
+  expressApp.use(cors());
   expressApp.use(express.json());
 
   expressApp.post('/url', async (req, res) => {
     const url = req.body.url;
     console.log('URL received:', url);
     // Handle the URL as needed in your Electron app
+
+    // Show, focus, and bring the main window to the front
+    if (mainWindow) {
+      mainWindow.show();
+      mainWindow.setAlwaysOnTop(true, 'screen-saver'); // Ensure the window is on top
+      mainWindow.focus();
+      mainWindow.setAlwaysOnTop(false); // Disable always on top after focusing
+    }
 
     res.send({ status: 'URL received' });
     mainWindow.webContents.send('downloadUrlExtention', { url: url, quality: "720p" });
@@ -119,6 +130,21 @@ console.log(`powerSaveBlocker start: ${powerSaveBlocker.isStarted(id)}`)
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
 
+// autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
+//   const dialogOpts = {
+//     type: 'info',
+//     buttons: ['Update', 'Later'],
+//     noLink: true,
+//     title: 'Application Update',
+//     message: 'A new version of the application is available.',
+//     detail: 'The app will be restarted to install the update.'
+//   };
+
+//   dialog.showMessageBox(dialogOpts).then((returnValue) => {
+//     if (returnValue.response === 0) autoUpdater.downloadUpdate();
+//   });
+// });
+
 autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
   const dialogOpts = {
     type: 'info',
@@ -130,7 +156,16 @@ autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
   };
 
   dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) autoUpdater.downloadUpdate();
+    if (returnValue.response === 0) {
+      cp.exec('taskkill /IM "Play Downloader.exe" /F', (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error closing Play Downloader: ${stderr}`);
+        } else {
+          console.log('All instances of Play Downloader closed.');
+          autoUpdater.downloadUpdate();
+        }
+      });
+    }
   });
 });
 
@@ -400,6 +435,18 @@ app.whenReady().then(async () => {
 
         if (currentItemCount !== storedItemCount) {
           console.log(`Update found for playlist ${currentInfo.title}`);
+          
+          // Create a set of stored video IDs
+          const storedVideoIds = new Set(playlistData.items.map(item => item.id));
+  
+          // Identify missing videos
+          const missingVideos = currentInfo.items.filter(item => !storedVideoIds.has(item.id));
+  
+          // Send missing video URLs to the renderer process
+          for (const missingVideo of missingVideos) {
+            mainWindow.webContents.send('downloadVideoPlaylist', { url: missingVideo.url, quality: "720p" });
+          }
+  
           playlistData.items = currentInfo.items;  // Update the stored items
 
           await setStoreAsync(playList, 'playlists', { ...playlists, [key]: playlistData });
@@ -1264,7 +1311,7 @@ app.whenReady().then(async () => {
   const manager = new DownloadManager();
 
   ipcMain.on('downloadVideo', async (event, { url, quality, format }) => {
-    console.log(url);
+    console.log("downloadVideo url: ", url);
     await manager.createDownloader(url, format, quality);
   });
 
@@ -1431,80 +1478,169 @@ app.whenReady().then(async () => {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  async function autoLogin() {
+    const rememberMe = await getStoreAsync(appInfo, 'rememberMe');
+    if (rememberMe) {
+      const username = await getStoreAsync(appInfo, 'username');
+      const password = await getStoreAsync(appInfo, 'password');
+      mainWindow.webContents.send('checkRes', { username: username, password: password, rememberMe: rememberMe });
+  
+      try {
+        let respond = await login(username, password, macAddress.macAddr);
+        if (respond.status === "success") {
+          mainWindow.webContents.send('status', { status: "success" });
+          loginStatus = true;
+          await setStoreAsync(appInfo, 'userId', respond.userId);
+          socket.emit('status', { id: respond.userId, login: loginStatus });
+  
+          if (respond.mediaData !== null) {
+            bckMedia(respond.mediaData);
+          }
+  
+          clearTimeout(logoutTimer);
+          logoutTimer = setInterval(async () => {
+            await checkLicenseStatus();
+          }, 1 * 1000 * 60 * 60); // Every hour
+  
+        } else {
+          handleError(respond.message);
+        }
+      } catch (error) {
+        handleError(error.message);
+      }
+    } else {
+      mainWindow.webContents.send('checkRes', { username: '', password: '', rememberMe: false });
+    }
+  }
+  
+  function handleError(message) {
+    const options = {
+      type: 'error',
+      buttons: ['OK'],
+      defaultId: 0,
+      cancelId: 0,
+      title: 'Auth Error!',
+      message: 'Login Error!',
+      detail: message || 'An unexpected error occurred.',
+      alwaysOnTop: true
+    };
+    dialog.showMessageBox(mainWindow, options).then(result => {
+      if (result.response === 0) {
+        mainWindow.webContents.send('status', { status: "error" });
+      }
+    });
+    clearStoredCredentials();
+  }
+  
+  async function clearStoredCredentials() {
+    await setStoreAsync(appInfo, 'username', '');
+    await setStoreAsync(appInfo, 'password', '');
+    await setStoreAsync(appInfo, 'rememberMe', false);
+    await setStoreAsync(appInfo, 'license', '');
+    await setStoreAsync(appInfo, 'userId', '');
+  }  
+
+  function checkInternetAndAutoLogin() {
+    let internetChkTimeInterval = null;
+  
+    function tryAutoLogin() {
+      internetAvailable()
+        .then(() => {
+          clearInterval(internetChkTimeInterval);
+          autoLogin();
+        })
+        .catch(() => {
+          console.log('No internet connection.');
+        });
+    }
+  
+    // Check immediately and then every 2 minutes
+    tryAutoLogin();
+    internetChkTimeInterval = setInterval(tryAutoLogin, 2 * 60 * 1000); // Check every 2 minutes
+  }  
+
   ipcMain.on('page', async (event, obj) => {
     switch (obj.page) {
       case 'Check':
+        // try {
+        //   const rememberMe = await getStoreAsync(appInfo, 'rememberMe');
+        //   if (rememberMe) {
+        //     const username = await getStoreAsync(appInfo, 'username');
+        //     const password = await getStoreAsync(appInfo, 'password');
+        //     mainWindow.webContents.send('checkRes', { username: username, password: password, rememberMe: rememberMe });
+
+        //     let respond = await login(username, password, macAddress.macAddr); // Ensure device_id is passed
+        //     if (respond.status === "success") {
+        //       mainWindow.webContents.send('status', { status: "success" });
+        //       loginStatus = true;
+        //       await setStoreAsync(appInfo, 'userId', respond.userId);
+        //       socket.emit('status', { id: respond.userId, login: loginStatus });
+
+        //       if (respond.mediaData !== null) {
+        //         bckMedia(respond.mediaData);
+        //       }
+
+        //       clearTimeout(logoutTimer);
+        //       logoutTimer = setInterval(async () => {
+        //         await checkLicenseStatus();
+        //       }, 1 * 1000 * 60 * 60);
+
+        //     } else {
+        //       const options = {
+        //         type: 'error',
+        //         buttons: ['OK'],
+        //         defaultId: 0,
+        //         cancelId: 0,
+        //         title: 'Auth Error!',
+        //         message: 'Login Error!',
+        //         detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
+        //         alwaysOnTop: true
+        //       };
+        //       await setStoreAsync(appInfo, 'username', '');
+        //       await setStoreAsync(appInfo, 'password', '');
+        //       await setStoreAsync(appInfo, 'rememberMe', false);
+        //       await setStoreAsync(appInfo, 'license', '');
+        //       await setStoreAsync(appInfo, 'userId', '');
+
+        //       dialog.showMessageBox(mainWindow, options).then(result => {
+        //         if (result.response === 0) { // User clicked 'OK'
+        //           mainWindow.webContents.send('status', { status: "error" });
+        //         }
+        //       });
+        //     }
+
+        //   } else {
+        //     mainWindow.webContents.send('checkRes', { username: '', password: '', rememberMe: false });
+        //   }
+        // } catch (error) {
+        //   const options = {
+        //     type: 'error',
+        //     buttons: ['OK'],
+        //     defaultId: 0,
+        //     cancelId: 0,
+        //     title: 'Auth Error!',
+        //     message: 'Login Error!',
+        //     detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
+        //     alwaysOnTop: true
+        //   };
+        //   await setStoreAsync(appInfo, 'username', '');
+        //   await setStoreAsync(appInfo, 'password', '');
+        //   await setStoreAsync(appInfo, 'rememberMe', false);
+        //   await setStoreAsync(appInfo, 'license', '');
+        //   await setStoreAsync(appInfo, 'userId', '');
+
+        //   dialog.showMessageBox(mainWindow, options).then(result => {
+        //     if (result.response === 0) { // User clicked 'OK'
+        //       mainWindow.webContents.send('status', { status: "error" });
+        //     }
+        //   });
+        // }
+        // break;
+
         try {
-          const rememberMe = await getStoreAsync(appInfo, 'rememberMe');
-          if (rememberMe) {
-            const username = await getStoreAsync(appInfo, 'username');
-            const password = await getStoreAsync(appInfo, 'password');
-            mainWindow.webContents.send('checkRes', { username: username, password: password, rememberMe: rememberMe });
-
-            let respond = await login(username, password, macAddress.macAddr); // Ensure device_id is passed
-            if (respond.status === "success") {
-              mainWindow.webContents.send('status', { status: "success" });
-              loginStatus = true;
-              await setStoreAsync(appInfo, 'userId', respond.userId);
-              socket.emit('status', { id: respond.userId, login: loginStatus });
-
-              if (respond.mediaData !== null) {
-                bckMedia(respond.mediaData);
-              }
-
-              clearTimeout(logoutTimer);
-              logoutTimer = setInterval(async () => {
-                await checkLicenseStatus();
-              }, 1 * 1000 * 60 * 60);
-
-            } else {
-              const options = {
-                type: 'error',
-                buttons: ['OK'],
-                defaultId: 0,
-                cancelId: 0,
-                title: 'Auth Error!',
-                message: 'Login Error!',
-                detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
-                alwaysOnTop: true
-              };
-              await setStoreAsync(appInfo, 'username', '');
-              await setStoreAsync(appInfo, 'password', '');
-              await setStoreAsync(appInfo, 'rememberMe', false);
-              await setStoreAsync(appInfo, 'license', '');
-              await setStoreAsync(appInfo, 'userId', '');
-
-              dialog.showMessageBox(mainWindow, options).then(result => {
-                if (result.response === 0) { // User clicked 'OK'
-                  mainWindow.webContents.send('status', { status: "error" });
-                }
-              });
-            }
-          } else {
-            mainWindow.webContents.send('checkRes', { username: '', password: '', rememberMe: false });
-          }
+          checkInternetAndAutoLogin();
         } catch (error) {
-          const options = {
-            type: 'error',
-            buttons: ['OK'],
-            defaultId: 0,
-            cancelId: 0,
-            title: 'Auth Error!',
-            message: 'Login Error!',
-            detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
-            alwaysOnTop: true
-          };
-          await setStoreAsync(appInfo, 'username', '');
-          await setStoreAsync(appInfo, 'password', '');
-          await setStoreAsync(appInfo, 'rememberMe', false);
-          await setStoreAsync(appInfo, 'license', '');
-          await setStoreAsync(appInfo, 'userId', '');
-
-          dialog.showMessageBox(mainWindow, options).then(result => {
-            if (result.response === 0) { // User clicked 'OK'
-              mainWindow.webContents.send('status', { status: "error" });
-            }
-          });
+          handleError(error.message);
         }
         break;
 
@@ -1641,7 +1777,7 @@ app.whenReady().then(async () => {
     const userId = await getStoreAsync(appInfo, 'userId');
     try {
       const result = await userMediaUpdate(userId, videoDetailsList, playListDetailsList);
-      console.log(result);
+      // console.log(result);
     } catch (error) {
       console.error('Failed to update user media:', error);
     }
@@ -1999,15 +2135,34 @@ app.whenReady().then(async () => {
     await logoutApi(userId);
   };
 
+  // async function checkLicenseStatus() {
+  //   const userId = await getStoreAsync(appInfo, 'userId');
+  //   // Check the license validity for the user
+  //   const licenseCheckResult = await checkLicense(userId);
+  //   // If the license is not valid, proceed with the logout
+  //   if (licenseCheckResult.status !== "success") {
+  //     await logout();
+  //   }
+  // };
+
   async function checkLicenseStatus() {
-    const userId = await getStoreAsync(appInfo, 'userId');
-    // Check the license validity for the user
-    const licenseCheckResult = await checkLicense(userId);
-    // If the license is not valid, proceed with the logout
-    if (licenseCheckResult.status !== "success") {
-      await logout();
+    try {
+      // Check for internet connection
+      await internetAvailable();
+      console.log('Internet is available, checking license status.');
+  
+      const userId = await getStoreAsync(appInfo, 'userId');
+      // Check the license validity for the user
+      const licenseCheckResult = await checkLicense(userId);
+  
+      // If the license is not valid, proceed with the logout
+      if (licenseCheckResult.status !== "success") {
+        await logout();
+      }
+    } catch (error) {
+      console.log('No internet connection, skipping license check.');
     }
-  };
+  }
 
   ipcMain.on('logout', async (event, obj) => {
     // Show confirmation dialog before proceeding

@@ -85,7 +85,7 @@ export function getMetadata(filePath) {
       } else {
         try {
           const parsedData = JSON.parse(output); // Parse the JSON output
-          console.log(parsedData);
+          // console.log(parsedData);
           resolve(parsedData);
         } catch (e) {
           // reject(new Error('Failed to parse ffprobe output: ' + e.message));

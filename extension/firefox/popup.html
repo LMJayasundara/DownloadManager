@@ -8,15 +8,12 @@
     body {
       font-family: Arial, sans-serif;
       margin: 10px;
-      width: 400px;
-      height: 400px;
+      width: 280px;
+      height: 100px;
       overflow: hidden;
-      /* Prevents the body from scrolling */
       display: flex;
       flex-direction: column;
-      /* Organizes the children (title, buttons, table) in a column */
       align-items: center;
-      /* Center content horizontally */
     }
 
     h1 {
@@ -27,12 +24,9 @@
 
     button {
       display: inline-block;
-      /* Change to inline-block for horizontal alignment */
       width: auto;
-      /* Adjust width as needed */
       padding: 8px;
       margin: 0 5px;
-      /* Space between buttons */
       font-size: 16px;
       color: #fff;
       background-color: #007bff;
@@ -40,17 +34,14 @@
       border-radius: 4px;
       cursor: pointer;
       position: relative;
-      /* Needed for tooltip positioning */
     }
 
     button:hover {
       background-color: #0056b3;
     }
 
-    /* Tooltip styling */
     button:hover:after {
       content: attr(title);
-      /* Use the title attribute for the tooltip text */
       position: absolute;
       bottom: 100%;
       left: 50%;
@@ -74,18 +65,15 @@
 
     #cookieTableContainer {
       flex-grow: 1;
-      /* Takes up all available space */
       overflow: auto;
-      /* Enables scrolling */
       width: 100%;
-      /* Sets the width to fill the body */
       max-height: 300px;
-      /* Limit the height to enforce scrolling */
     }
 
     table {
       min-width: 100%;
       border-collapse: collapse;
+      display: none; /* Hide the table */
     }
 
     th,
@@ -102,12 +90,9 @@
     thead th {
       position: sticky;
       top: 0;
-      /* Stick to the top of the table container */
       background-color: #f2f2f2;
-      /* Same background to cover cells beneath */
       z-index: 2;
-      /* Ensures the header stays on top of other content */
-      box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); 
+      box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
     }
   </style>
 </head>
@@ -115,10 +100,10 @@
 <body>
   <h1>Play Downloader</h1>
   <div style="padding: 10px 0;">
-    <button id="copyBtn" title="Copy"><i class="fas fa-copy"></i></button>
-    <button id="exportBtn" title="Export"><i class="fas fa-file-export"></i></button>
-    <button id="refreshBtn" title="Refresh Cookies"><i class="fas fa-sync"></i></button>
-    <button id="fetchUrlBtn" title="Fetch Video URL"><i class="fas fa-download"></i></button>
+    <button id="fetchUrlBtn" title="Download Video"><i class="fas fa-download"></i></button>
+    <button id="copyBtn" title="Copy Cookie"><i class="fas fa-copy"></i></button>
+    <button id="exportBtn" title="Export Cookie"><i class="fas fa-file-export"></i></button>
+    <button id="refreshBtn" title="Refresh Cookie"><i class="fas fa-sync"></i></button>
   </div>
   <p id="videoUrlDisplay"></p>
   <div id="cookieTableContainer">
