@@ -20,7 +20,7 @@ import ffprobePath from 'ffprobe-static'
 
 import { addMetadata, getMetadata } from './src/metadata';
 import { YoutubeVideoDetails, TikTokVideoDetails, GenericVideoDetails, PlaylistVideoDetails } from './src/getVideoInfo';
-import { videoList, playList, appInfo, setStoreAsync, getStoreAsync } from './src/localdb';
+import { videoList, playList, updateChk, appInfo, setStoreAsync, getStoreAsync } from './src/localdb';
 import { getIcon, getTrayIcon, loadDefaultThumbnail, loadDefaultAuthor } from './src/setIcons';
 import { login, logoutApi, checkLicense, userMediaUpdate } from './src/apiHandler';
 const packageJson = require('../../package.json');
@@ -128,22 +128,7 @@ console.log(`powerSaveBlocker start: ${powerSaveBlocker.isStarted(id)}`)
 ///////////////////////////////////////////////////// start app update code /////////////////////////////////////////////////////
 //Basic flags
 autoUpdater.autoDownload = false;
-autoUpdater.autoInstallOnAppQuit = true;
-
-// autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
-//   const dialogOpts = {
-//     type: 'info',
-//     buttons: ['Update', 'Later'],
-//     noLink: true,
-//     title: 'Application Update',
-//     message: 'A new version of the application is available.',
-//     detail: 'The app will be restarted to install the update.'
-//   };
-
-//   dialog.showMessageBox(dialogOpts).then((returnValue) => {
-//     if (returnValue.response === 0) autoUpdater.downloadUpdate();
-//   });
-// });
+autoUpdater.autoInstallOnAppQuit = false;
 
 autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
   const dialogOpts = {
@@ -152,26 +137,19 @@ autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
     noLink: true,
     title: 'Application Update',
     message: 'A new version of the application is available.',
-    detail: 'The app will be restarted to install the update.'
+    detail: 'The app will be restarted to install the update.',
+    cancelId: 1
   };
 
-  dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) {
-      cp.exec('taskkill /IM "Play Downloader.exe" /F', (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error closing Play Downloader: ${stderr}`);
-        } else {
-          console.log('All instances of Play Downloader closed.');
-          autoUpdater.downloadUpdate();
-        }
-      });
-    }
+  dialog.showMessageBox(mainWindow, dialogOpts).then((returnValue) => {
+    if (returnValue.response === 0) autoUpdater.downloadUpdate();
   });
 });
 
 autoUpdater.on('download-progress', (progress) => {
   if (!progressBar) {
     progressBar = new ProgressBar({
+      // indeterminate: false,
       title: 'Downloading update',
       text: 'Downloading update...',
       browserWindow: {
@@ -182,26 +160,67 @@ autoUpdater.on('download-progress', (progress) => {
         maximizable: false
       }
     });
+
+    progressBar.on('completed', () => {
+      progressBar.close();
+      progressBar = null;
+    });
+
+    progressBar.on('aborted', () => {
+      progressBar.close();
+      progressBar = null;
+    });
+
   } else {
     progressBar.detail = `Downloading complete ${(progress.percent).toFixed()}%`;
-    progressBar.value = (progress.percent).toFixed() / 100;
+    progressBar.value = progress.percent;
   }
 });
 
-autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+autoUpdater.on('update-downloaded', async (event, releaseNotes, releaseName) => {
   const dialogOpts = {
     type: 'info',
     buttons: ['Restart', 'Later'],
     noLink: true,
     title: 'Application Update',
     message: process.platform === 'win32' ? releaseNotes : releaseName,
-    detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+    detail: 'A new version has been downloaded. Restart the application to apply the updates.',
+    cancelId: 1
   };
 
-  dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) autoUpdater.quitAndInstall();
-  });
+  if (progressBar) {
+    progressBar.close();
+    progressBar = null;
+  }
+
+  const returnValue = await dialog.showMessageBox(mainWindow, dialogOpts);
+  if (returnValue.response === 0) {
+    // Ensure the main window is closed before starting the update
+    mainWindow.close();
+    await setStoreAsync(updateChk, 'updateAvailable', false);
+    autoUpdater.quitAndInstall();
+    // Adding a slight delay to ensure window is fully closed
+    setTimeout(async () => {
+      const userId = await getStoreAsync(appInfo, 'userId');
+      await logoutApi(userId);
+      app.exit(0); // Exit the current instance
+    }, 1000);
+  } else {
+    await setStoreAsync(updateChk, 'updateAvailable', true);
+  }
 });
+
+ipcMain.on('cancel-download', () => {
+  if (progressBar) {
+    progressBar.close();
+    progressBar = null;
+  }
+  autoUpdater.autoDownload = false; // Stop the download
+});
+
+function remindToUpdate() {
+  autoUpdater.downloadUpdate();
+}
 
 autoUpdater.on('error', (error) => {
   dialog.showErrorBox('Error', error.message);
@@ -217,7 +236,7 @@ function confirmDeletion(mainWindow) {
       defaultId: 1,
       title: 'Confirm Deletion',
       message: 'Do you really want to delete?',
-      detail: 'This action cannot be undone.',
+      detail: 'This action cannot be undone.'
     };
 
     dialog.showMessageBox(mainWindow, options).then(result => {
@@ -1726,6 +1745,11 @@ app.whenReady().then(async () => {
 
       case 'Home':
         await syncHome();
+        const updateStatus = await getStoreAsync(updateChk, 'updateAvailable');
+        if (updateStatus) {
+          remindToUpdate();
+        }
+        autoUpdater.checkForUpdates();
         break;
 
       case 'PlayList':
@@ -2249,7 +2273,6 @@ app.whenReady().then(async () => {
   });
 
   createWindow();
-  autoUpdater.checkForUpdates();
 
   const isPortInUse = await checkPort(expressPort);
   if (isPortInUse) {

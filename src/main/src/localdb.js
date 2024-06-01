@@ -2,6 +2,7 @@ const Store = require('electron-store'); // Adjust this to your actual store imp
 
 export const videoList = new Store({ name: 'videoList' });
 export const playList = new Store({ name: 'playList' });
+export const updateChk = new Store({ name: 'updateChk' });
 export const appInfo = new Store({
   name: 'appInfo',
   defaults: {

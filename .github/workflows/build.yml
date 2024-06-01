@@ -9,8 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        # os: [macos-latest, ubuntu-latest, windows-latest]
-        os: [windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -48,8 +47,39 @@ jobs:
           fi
         shell: bash
 
+      # - name: Delete Old Artifacts
+      #   uses: actions/github-script@v6
+      #   id: artifact
+      #   with:
+      #     script: |
+      #       const res = await github.rest.actions.listArtifactsForRepo({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #       })
+
+      #       res.data.artifacts
+      #         .forEach(({ id }) => {
+      #           github.rest.actions.deleteArtifact({
+      #             owner: context.repo.owner,
+      #             repo: context.repo.repo,
+      #             artifact_id: id,
+      #           })
+      #         })
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3  # Ensure we are using the latest version
         with:
           name: Play-Downloader-${{ matrix.os }}
           path: dist/
+
+      # - name: Upload artifact to cPanel server
+      #   env:
+      #     USER: ${{ secrets.CPANEL_USER }}
+      #     HOST: ${{ secrets.CPANEL_HOST }}
+      #     REMOTE_DIR: ${{ secrets.CPANEL_REMOTE_DIR }}
+      #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      #   run: |
+      #     echo "${SSH_PRIVATE_KEY}" > private_key
+      #     chmod 600 private_key
+      #     scp -i private_key Play-Downloader-${{ matrix.os }}.zip ${USER}@${HOST}:${REMOTE_DIR}
+      #   shell: bash
