@@ -82,30 +82,7 @@ const VideoCard = ({ video, index, setDownloadStatus}) => {
       >
         <FaEllipsisV />
       </button>
-
-      {/* Options Menu */}
-      {/* <div ref={menuRef}>
-        {menuVisible && (
-          <div className="absolute right-2 bottom-10 bg-white rounded-md shadow-lg">
-            <ul>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={(e) => {
-                  e.stopPropagation(); // Stop event propagation to prevent parent onClick from triggering
-                  navigate('/playlistplayer', { state: { video: video } });
-              }}>
-                  Play All
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Repeated</li>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Shuffled</li>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" role="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  ipcRenderer.send('deletePlaylist', { playlistId: video.id });
-                }}>Delete</li>
-            </ul>
-          </div>
-        )}
-      </div> */}
-
+      
       {/* Options Menu */}
       <div ref={menuRef}>
         {menuVisible && (

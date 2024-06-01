@@ -187,7 +187,7 @@ app.post('/api/User/Login', async (req, res) => {
 
       const deviceIsValid = user.device_id === device_id;
       if (!deviceIsValid) {
-        res.status(403).send(`User registered on another device`);
+        res.status(403).send(`User registered on another device, reset your license`);
         return;
       }
 

@@ -77,15 +77,7 @@ export const DataProvider = ({ children }) => {
         ipcRenderer.on('aboutApp', (data) => {
             setAboutApp(data);
         });
-
-        // ipcRenderer.on('palylistAlbumVideos', (data) => {
-        //     setLoadingPlaylistsAlbum(true);
-        //     setPlaylists(data)
-        //     setTimeout(() => {
-        //         setLoadingPlaylistsAlbum(false);
-        //     }, 1000);
-        // });
-
+        
         // Clean up the listener when the context provider is unmounted
         return () => {
             ipcRenderer.removeAllListeners('downloadProgress');

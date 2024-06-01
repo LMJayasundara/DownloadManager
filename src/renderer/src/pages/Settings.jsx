@@ -167,16 +167,6 @@ function Settings() {
               </button>
             </div>
 
-            {/* <div className="flex justify-between items-center">
-              <p className="text-sm font-bold text-gray-600">Backup Data</p>
-              <button className="py-2 w-32 px-4 bg-red-500 rounded-lg text-white font-bold text-sm hover:bg-red-600 focus:outline-none flex items-center justify-center space-x-2"
-                onClick={bckupData}
-              >
-                <FaSync className="text-md" />
-                <span>Backup</span>
-              </button>
-            </div> */}
-
             <div className="flex justify-between items-center">
               <p className="text-sm font-bold text-gray-600">Sign Out</p>
               <button className="py-2 w-32 px-4 bg-red-500 rounded-lg text-white font-bold text-sm hover:bg-red-600 focus:outline-none flex items-center justify-center space-x-2"

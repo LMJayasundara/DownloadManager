@@ -89,26 +89,34 @@ document.getElementById('exportBtn').addEventListener('click', function () {
 });
 
 document.getElementById('fetchUrlBtn').addEventListener('click', function () {
+  console.log("Fetch URL button clicked"); // Debugging statement
+  document.getElementById('videoUrlDisplay').textContent = "clicked";
   browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-    const currentTab = tabs[0]; // tabs[0] is the active tab in the current window
-    const url = currentTab.url;
-    document.getElementById('videoUrlDisplay').textContent = url;
+    console.log("Tabs queried:", tabs); // Debugging statement
+    if (tabs.length > 0) {
+      const currentTab = tabs[0]; // tabs[0] is the active tab in the current window
+      const url = currentTab.url;
+      document.getElementById('videoUrlDisplay').textContent = url;
 
-    fetch("http://localhost:8000/url", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ url: url }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Success:", data);
-      })
-      .catch((error) => {
-        console.log("Error:", error);
-      });
+      // Send message to background script
+      browser.runtime.sendMessage({ action: 'fetchUrl', url: url });
+    } else {
+      console.error('No active tabs found');
+    }
+  }).catch((error) => {
+    console.error('Error querying tabs:', error);
   });
+});
+
+// Listener to handle the response from the background script
+browser.runtime.onMessage.addListener((message) => {
+  if (message.action === 'fetchUrlResult') {
+    if (message.success) {
+      console.log('Fetch URL Success:', message.data);
+    } else {
+      console.log('Fetch URL Error:', message.error);
+    }
+  }
 });
 
 // Call this function to initially populate the cookie table when the popup loads.

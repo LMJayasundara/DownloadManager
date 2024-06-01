@@ -67,10 +67,10 @@ function Player() {
           <FaArrowLeft />
           <span className='ml-2'>Back</span>
         </button>
-        <button onClick={handleDeleteVideo} className='flex items-center text-gray-600'>
+        {/* <button onClick={handleDeleteVideo} className='flex items-center text-gray-600'>
           <FaTrash />
           <span className='ml-2'>Delete</span>
-        </button>
+        </button> */}
       </div>
 
       <div className='flex-grow overflow-auto'>

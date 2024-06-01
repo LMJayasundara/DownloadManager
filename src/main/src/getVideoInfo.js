@@ -68,28 +68,6 @@ function urlHash(url) {
   return Math.abs(hash).toString(16);
 }
 
-// function extractInfo(url) {
-//   const domainPattern = /https?:\/\/([^\/]+)/;
-//   const namePattern = /([^\/]+)(?=\.\w+$)/;
-
-//   const domainMatch = url.match(domainPattern);
-//   const nameMatch = url.match(namePattern);
-
-//   let title = domainMatch ? domainMatch[1] : "Unknown";
-//   let name = nameMatch ? nameMatch[1] : "Unknown";
-
-//   // Replace underscores and hyphens and charcters with spaces
-//   name = name.replace(/[%$3@_-]/g, ' ');
-
-//   // Remove separate words that are purely numeric
-//   name = name.split(' ').filter(part => !/^\d+$/.test(part)).join(' ');
-
-//   // Simplify title by extracting only the domain name, not subdomains
-//   title = title.replace(/www\./, '').split('.').slice(-2).join('.');
-
-//   return { title, name };
-// }
-
 function extractInfo(url) {
   const domainPattern = /https?:\/\/([^\/]+)/;
   const namePattern = /([^\/]+)(?=\.\w+$)/;

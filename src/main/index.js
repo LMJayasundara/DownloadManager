@@ -4,20 +4,17 @@ import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import cp from 'child_process';
 import fs from 'fs';
-// import ytdl from 'ytdl-core';
 import ytdl from '@distube/ytdl-core';
 import ffmpegPath from 'ffmpeg-static';
 import stream from 'stream';
 import util from 'util';
 import { autoUpdater, AppUpdater } from "electron-updater";
 import ProgressBar from 'electron-progressbar';
-// const { v1 } = require("tiklydown-sanzy");
 const { v2 } = require("node-tiklydown");
 const { DownloaderHelper } = require('node-downloader-helper');
 import axios from 'axios';
+import internetAvailable from 'internet-available';
 import ffmpeg from 'fluent-ffmpeg';
-// const ffmpeg = require('fluent-ffmpeg');
-// import Handbrake from 'handbrake-js';
 
 import ffprobePath from 'ffprobe-static'
 
@@ -39,11 +36,9 @@ let downloadProgress = {};
 let defaultThumbnail = null, defaultAuthor = null;
 let logoutTimer = null;
 let loginStatus = false;
-// let useId = null;
 const express = require('express');
+const cors = require('cors');
 const net = require('net');
-// const expressapp = express();
-// const expressport = 8000;
 
 let expressApp;
 const expressPort = 8000;
@@ -69,29 +64,23 @@ socket.on('disconnect', () => {
   console.log('disconnected from server');
 });
 
-
-// expressapp.use(express.json()); // Middleware to parse JSON bodies
-
-// expressapp.post('/url', (req, res) => {
-//   const url = req.body.url;
-//   console.log('URL received:', url);
-//   // Handle the URL as needed in your Electron app
-
-//   res.send({ status: 'URL received' });
-// });
-
-// expressapp.listen(expressport, () => {
-//   console.log(`Server listening at http://localhost:${expressport}`);
-// });
-
 function startExpressServer(port) {
   expressApp = express();
+  expressApp.use(cors());
   expressApp.use(express.json());
 
   expressApp.post('/url', async (req, res) => {
     const url = req.body.url;
     console.log('URL received:', url);
     // Handle the URL as needed in your Electron app
+
+    // Show, focus, and bring the main window to the front
+    if (mainWindow) {
+      mainWindow.show();
+      mainWindow.setAlwaysOnTop(true, 'screen-saver'); // Ensure the window is on top
+      mainWindow.focus();
+      mainWindow.setAlwaysOnTop(false); // Disable always on top after focusing
+    }
 
     res.send({ status: 'URL received' });
     mainWindow.webContents.send('downloadUrlExtention', { url: url, quality: "720p" });
@@ -141,6 +130,21 @@ console.log(`powerSaveBlocker start: ${powerSaveBlocker.isStarted(id)}`)
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
 
+// autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
+//   const dialogOpts = {
+//     type: 'info',
+//     buttons: ['Update', 'Later'],
+//     noLink: true,
+//     title: 'Application Update',
+//     message: 'A new version of the application is available.',
+//     detail: 'The app will be restarted to install the update.'
+//   };
+
+//   dialog.showMessageBox(dialogOpts).then((returnValue) => {
+//     if (returnValue.response === 0) autoUpdater.downloadUpdate();
+//   });
+// });
+
 autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
   const dialogOpts = {
     type: 'info',
@@ -152,7 +156,16 @@ autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
   };
 
   dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) autoUpdater.downloadUpdate();
+    if (returnValue.response === 0) {
+      cp.exec('taskkill /IM "Play Downloader.exe" /F', (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error closing Play Downloader: ${stderr}`);
+        } else {
+          console.log('All instances of Play Downloader closed.');
+          autoUpdater.downloadUpdate();
+        }
+      });
+    }
   });
 });
 
@@ -292,14 +305,6 @@ async function createWindow() {
     }
   });
 
-  // // Send version to renderer process
-  // mainWindow.webContents.on('did-finish-load', () => {
-  //   mainWindow.webContents.send('aboutApp', {
-  //     currentVersion: packageJson.version,
-  //     licenseKey: "XYZ-123-ABC-789"
-  //   });
-  // });
-
   mainWindow.on('close', function (event) {
     if (!app.isQuitting) {
       event.preventDefault();
@@ -317,9 +322,6 @@ async function createWindow() {
   }
 
   // Get the path to the extension folder
-  // const extensionPath = path.join(app.getAppPath(), 'resources', 'extension');
-  // const extensionPath = path.join(process.resourcesPath, '../extension');
-
   let extensionPath;
   if (is.dev) {
     extensionPath = path.join(app.getAppPath(), 'extension');
@@ -343,14 +345,6 @@ async function createWindow() {
       });
   });
 }
-
-// app.setLoginItemSettings({
-//   // openAtLogin: true,
-//   // openAsHidden: true
-//   openAtLogin: true,
-//   openAsHidden: true,
-//   path: app.getPath("exe")
-// });
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -441,6 +435,18 @@ app.whenReady().then(async () => {
 
         if (currentItemCount !== storedItemCount) {
           console.log(`Update found for playlist ${currentInfo.title}`);
+          
+          // Create a set of stored video IDs
+          const storedVideoIds = new Set(playlistData.items.map(item => item.id));
+  
+          // Identify missing videos
+          const missingVideos = currentInfo.items.filter(item => !storedVideoIds.has(item.id));
+  
+          // Send missing video URLs to the renderer process
+          for (const missingVideo of missingVideos) {
+            mainWindow.webContents.send('downloadVideoPlaylist', { url: missingVideo.url, quality: "720p" });
+          }
+  
           playlistData.items = currentInfo.items;  // Update the stored items
 
           await setStoreAsync(playList, 'playlists', { ...playlists, [key]: playlistData });
@@ -571,31 +577,6 @@ app.whenReady().then(async () => {
       this.start();
     }
 
-    // async start() {
-    //   this.data = { ...appInfo.store };
-    //   this.info = await ytdl.getInfo(this.url, { requestOptions: { headers: { "Cookie": this.data.cookie } } });
-
-    //   if (this.isDownloading) {
-    //     console.log(`Download for video ID ${this.videoId} is already in progress.`);
-    //     return;
-    //   }
-    //   if (this.format === "mp4") {
-    //     this.outputFilePath = path.join(this.directoryPath, `${this.videoId}.mp4`);
-    //     this.isDownloading = true;
-    //     console.log(`Starting download for: ${this.videoId} - Format: ${this.format}`);
-    //     this.initializeDownloadMP4();
-    //   }
-    //   if (this.format === "mp3") {
-    //     this.outputFilePath = path.join(this.directoryPath, `Audio/${this.videoId}.mp3`);
-    //     this.isDownloading = true;
-    //     console.log(`Starting download for: ${this.videoId} - Format: ${this.format}`);
-    //     this.initializeDownloadMP3();
-    //   }
-    //   else {
-    //     return
-    //   }
-    // }
-
     async start() {
       this.data = { ...appInfo.store };
       // this.info = await ytdl.getInfo(this.url, { requestOptions: { headers: { "Cookie": this.data.cookie } } });
@@ -724,12 +705,6 @@ app.whenReady().then(async () => {
         this.updateProgress();
       });
 
-      // this.videoDownloadStream.on('response', () => {
-      //   console.log("Video download has started");
-      //   addMetadata(this.outputFilePath, this.videoId, "mp4", 'youtube', "START", this.url);
-      // });
-      // this.audioDownloadStream.on('response', () => console.log("Audio download has started"));
-
       this.videoDownloadStream.on('error', error => {
         console.log('Video stream error:', error);
         this.isDownloading = false;
@@ -817,7 +792,6 @@ app.whenReady().then(async () => {
 
       this.audioDownloadStream.on('progress', (_, downloaded, total) => {
         this.audioprogress = ((downloaded / total) * 100).toFixed(2);
-        // console.log("Progress: ", this.audioprogress);
         mainWindow.webContents.send('downloadProgress', { videoId: this.videoId, progress: this.audioprogress });
       });
 
@@ -830,7 +804,6 @@ app.whenReady().then(async () => {
 
     updateProgress() {
       const minProgress = Math.min(this.videoprogress, this.audioprogress);
-      // console.log("Progress: ", minProgress);
       mainWindow.webContents.send('downloadProgress', { videoId: this.videoId, progress: minProgress });
     }
 
@@ -857,10 +830,6 @@ app.whenReady().then(async () => {
     }
 
     async stop() {
-      // if (!this.isDownloading) {
-      //   console.log(`No active download to stop for video ID ${this.videoId}.`);
-      //   return;
-      // }
       try {
         console.log(`Stopping download for: ${this.videoId}`);
         this.isDownloading = false;
@@ -988,7 +957,6 @@ app.whenReady().then(async () => {
         })
         .on('progress', (stats) => {
           const percent = stats.progress.toFixed(2);
-          // console.log(`Progress: ${percent}%`);
           mainWindow.webContents.send('downloadProgress', { videoId: this.videoId, progress: percent });
         });
 
@@ -1021,10 +989,6 @@ app.whenReady().then(async () => {
     }
 
     async stop() {
-      // if (!this.isDownloading) {
-      //   console.log(`No active download to stop for video ID ${this.videoId}.`);
-      //   return;
-      // }
       try {
         console.log(`Stopping download for: ${this.videoId}`);
         this.dl.stop();
@@ -1055,40 +1019,6 @@ app.whenReady().then(async () => {
       this.format = this.videoDetails.format;
       this.start();
     }
-
-    // // Add a method to convert videos to MP4
-    // async convertToMp4(inputPath, outputPath) {
-    //   console.log(`Converting ${inputPath} to MP4 format.`);
-    //   return new Promise((resolve, reject) => {
-    //     Handbrake.spawn({
-    //       input: inputPath,
-    //       output: outputPath,
-    //       format: 'mp4'
-    //     })
-    //       .on('error', err => {
-    //         console.error('Error during conversion:', err);
-    //         reject(err);
-    //       })
-    //       .on('progress', progress => {
-    //         console.log(`Conversion progress: ${progress.percentComplete}%`);
-    //       })
-    //       .on('end', () => {
-    //         console.log('Conversion completed successfully');
-    //         try {
-    //           if (fs.existsSync(inputPath)) {
-    //             fs.unlinkSync(inputPath);
-    //             console.log(`Deleted existing file: ${inputPath}`);
-    //           }
-    //           resolve();
-    //         } catch (error) {
-    //           console.log(error.message);
-    //           resolve();
-    //         }
-
-    //         // resolve();
-    //       });
-    //   });
-    // }
 
     async convertToMp4(inputPath, outputPath) {
       console.log(`Converting ${inputPath} to MP4 format.`);
@@ -1128,12 +1058,10 @@ app.whenReady().then(async () => {
         console.log(`Download for video ID ${this.videoId} is already in progress.`);
         return;
       }
-      console.log("xxxxxxxxxxxxxxxxxxx: ", this.format);
       if (this.format === "mp4" || this.format === "flv" || this.format === "mkv" || this.format === "3gp") {
         this.outputFilePath = path.join(this.directoryPath, `${this.videoId}.${this.format}`);
         this.tempFilePath = path.join(this.directoryPath, `${this.videoId}.temp.${this.format}`);
       } else {
-        console.log("Unsupported format: " + this.format);
         this.managerCallback(this.videoId, 'delete');
         return new Promise((resolve) => {
           const options = {
@@ -1194,10 +1122,6 @@ app.whenReady().then(async () => {
           this.isDownloading = false;
           this.managerCallback(this.videoId, 'delete');
 
-          // if (this.format !== 'mp4') {
-          //   await this.convertToMp4(this.outputFilePath, path.join(this.directoryPath, `${this.videoId}.mp4`));
-          // }
-
           // Convert to MP4 if the original format isn't MP4
           if (this.format !== 'mp4') {
             const mp4OutputPath = path.join(this.directoryPath, `${this.videoId}.mp4`);
@@ -1226,7 +1150,6 @@ app.whenReady().then(async () => {
         })
         .on('progress', (stats) => {
           const percent = stats.progress.toFixed(2);
-          // console.log(`Progress: ${percent}%`);
           mainWindow.webContents.send('downloadProgress', { videoId: this.videoId, progress: percent });
         });
 
@@ -1260,10 +1183,6 @@ app.whenReady().then(async () => {
     }
 
     async stop() {
-      // if (!this.isDownloading) {
-      //   console.log(`No active download to stop for video ID ${this.videoId}.`);
-      //   return;
-      // }
       try {
         console.log(`Stopping download for: ${this.videoId}`);
         this.dl.stop();
@@ -1392,7 +1311,7 @@ app.whenReady().then(async () => {
   const manager = new DownloadManager();
 
   ipcMain.on('downloadVideo', async (event, { url, quality, format }) => {
-    console.log(url);
+    console.log("downloadVideo url: ", url);
     await manager.createDownloader(url, format, quality);
   });
 
@@ -1445,7 +1364,6 @@ app.whenReady().then(async () => {
         }
 
         mainWindow.webContents.send('homeVideos', response);
-        // console.log("response: ", response);
         const data = { ...appInfo.store };
         mainWindow.webContents.send('appInfo', data);
       } else {
@@ -1454,7 +1372,6 @@ app.whenReady().then(async () => {
     }).catch(error => {
       console.error(`Error reading video:`, error);
     });
-    // await syncPlaylist();
   }
 
   async function syncPlaylist() {
@@ -1493,7 +1410,6 @@ app.whenReady().then(async () => {
       console.error("Error reading playlists: ", error);
       mainWindow.webContents.send('palylistVideos', {});
     }
-    // await syncHome();
   }
 
   async function fetchFirstVideoId(playlistId) {
@@ -1562,85 +1478,169 @@ app.whenReady().then(async () => {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  async function autoLogin() {
+    const rememberMe = await getStoreAsync(appInfo, 'rememberMe');
+    if (rememberMe) {
+      const username = await getStoreAsync(appInfo, 'username');
+      const password = await getStoreAsync(appInfo, 'password');
+      mainWindow.webContents.send('checkRes', { username: username, password: password, rememberMe: rememberMe });
+  
+      try {
+        let respond = await login(username, password, macAddress.macAddr);
+        if (respond.status === "success") {
+          mainWindow.webContents.send('status', { status: "success" });
+          loginStatus = true;
+          await setStoreAsync(appInfo, 'userId', respond.userId);
+          socket.emit('status', { id: respond.userId, login: loginStatus });
+  
+          if (respond.mediaData !== null) {
+            bckMedia(respond.mediaData);
+          }
+  
+          clearTimeout(logoutTimer);
+          logoutTimer = setInterval(async () => {
+            await checkLicenseStatus();
+          }, 1 * 1000 * 60 * 60); // Every hour
+  
+        } else {
+          handleError(respond.message);
+        }
+      } catch (error) {
+        handleError(error.message);
+      }
+    } else {
+      mainWindow.webContents.send('checkRes', { username: '', password: '', rememberMe: false });
+    }
+  }
+  
+  function handleError(message) {
+    const options = {
+      type: 'error',
+      buttons: ['OK'],
+      defaultId: 0,
+      cancelId: 0,
+      title: 'Auth Error!',
+      message: 'Login Error!',
+      detail: message || 'An unexpected error occurred.',
+      alwaysOnTop: true
+    };
+    dialog.showMessageBox(mainWindow, options).then(result => {
+      if (result.response === 0) {
+        mainWindow.webContents.send('status', { status: "error" });
+      }
+    });
+    clearStoredCredentials();
+  }
+  
+  async function clearStoredCredentials() {
+    await setStoreAsync(appInfo, 'username', '');
+    await setStoreAsync(appInfo, 'password', '');
+    await setStoreAsync(appInfo, 'rememberMe', false);
+    await setStoreAsync(appInfo, 'license', '');
+    await setStoreAsync(appInfo, 'userId', '');
+  }  
+
+  function checkInternetAndAutoLogin() {
+    let internetChkTimeInterval = null;
+  
+    function tryAutoLogin() {
+      internetAvailable()
+        .then(() => {
+          clearInterval(internetChkTimeInterval);
+          autoLogin();
+        })
+        .catch(() => {
+          console.log('No internet connection.');
+        });
+    }
+  
+    // Check immediately and then every 2 minutes
+    tryAutoLogin();
+    internetChkTimeInterval = setInterval(tryAutoLogin, 2 * 60 * 1000); // Check every 2 minutes
+  }  
+
   ipcMain.on('page', async (event, obj) => {
     switch (obj.page) {
       case 'Check':
+        // try {
+        //   const rememberMe = await getStoreAsync(appInfo, 'rememberMe');
+        //   if (rememberMe) {
+        //     const username = await getStoreAsync(appInfo, 'username');
+        //     const password = await getStoreAsync(appInfo, 'password');
+        //     mainWindow.webContents.send('checkRes', { username: username, password: password, rememberMe: rememberMe });
+
+        //     let respond = await login(username, password, macAddress.macAddr); // Ensure device_id is passed
+        //     if (respond.status === "success") {
+        //       mainWindow.webContents.send('status', { status: "success" });
+        //       loginStatus = true;
+        //       await setStoreAsync(appInfo, 'userId', respond.userId);
+        //       socket.emit('status', { id: respond.userId, login: loginStatus });
+
+        //       if (respond.mediaData !== null) {
+        //         bckMedia(respond.mediaData);
+        //       }
+
+        //       clearTimeout(logoutTimer);
+        //       logoutTimer = setInterval(async () => {
+        //         await checkLicenseStatus();
+        //       }, 1 * 1000 * 60 * 60);
+
+        //     } else {
+        //       const options = {
+        //         type: 'error',
+        //         buttons: ['OK'],
+        //         defaultId: 0,
+        //         cancelId: 0,
+        //         title: 'Auth Error!',
+        //         message: 'Login Error!',
+        //         detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
+        //         alwaysOnTop: true
+        //       };
+        //       await setStoreAsync(appInfo, 'username', '');
+        //       await setStoreAsync(appInfo, 'password', '');
+        //       await setStoreAsync(appInfo, 'rememberMe', false);
+        //       await setStoreAsync(appInfo, 'license', '');
+        //       await setStoreAsync(appInfo, 'userId', '');
+
+        //       dialog.showMessageBox(mainWindow, options).then(result => {
+        //         if (result.response === 0) { // User clicked 'OK'
+        //           mainWindow.webContents.send('status', { status: "error" });
+        //         }
+        //       });
+        //     }
+
+        //   } else {
+        //     mainWindow.webContents.send('checkRes', { username: '', password: '', rememberMe: false });
+        //   }
+        // } catch (error) {
+        //   const options = {
+        //     type: 'error',
+        //     buttons: ['OK'],
+        //     defaultId: 0,
+        //     cancelId: 0,
+        //     title: 'Auth Error!',
+        //     message: 'Login Error!',
+        //     detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
+        //     alwaysOnTop: true
+        //   };
+        //   await setStoreAsync(appInfo, 'username', '');
+        //   await setStoreAsync(appInfo, 'password', '');
+        //   await setStoreAsync(appInfo, 'rememberMe', false);
+        //   await setStoreAsync(appInfo, 'license', '');
+        //   await setStoreAsync(appInfo, 'userId', '');
+
+        //   dialog.showMessageBox(mainWindow, options).then(result => {
+        //     if (result.response === 0) { // User clicked 'OK'
+        //       mainWindow.webContents.send('status', { status: "error" });
+        //     }
+        //   });
+        // }
+        // break;
+
         try {
-          const rememberMe = await getStoreAsync(appInfo, 'rememberMe');
-          if (rememberMe) {
-            const username = await getStoreAsync(appInfo, 'username');
-            const password = await getStoreAsync(appInfo, 'password');
-            mainWindow.webContents.send('checkRes', { username: username, password: password, rememberMe: rememberMe });
-
-            let respond = await login(username, password, macAddress.macAddr); // Ensure device_id is passed
-            if (respond.status === "success") {
-              mainWindow.webContents.send('status', { status: "success" });
-              loginStatus = true;
-              await setStoreAsync(appInfo, 'userId', respond.userId);
-              socket.emit('status', { id: respond.userId, login: loginStatus });
-
-              if (respond.mediaData !== null) {
-                bckMedia(respond.mediaData);
-              }
-              // else {
-              //   syncMedia();
-              // }
-
-              clearTimeout(logoutTimer);
-              // setTimeout(logout, 3600000); // 3600000 milliseconds = 1 hour
-              // Set up the interval to call checkLicenseStatus every 60 minutes
-              logoutTimer = setInterval(async () => {
-                await checkLicenseStatus();
-              }, 1 * 1000 * 60 * 60);
-
-            } else {
-              const options = {
-                type: 'error',
-                buttons: ['OK'],
-                defaultId: 0,
-                cancelId: 0,
-                title: 'Auth Error!',
-                message: 'Login Error!',
-                detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
-                alwaysOnTop: true
-              };
-              await setStoreAsync(appInfo, 'username', '');
-              await setStoreAsync(appInfo, 'password', '');
-              await setStoreAsync(appInfo, 'rememberMe', false);
-              await setStoreAsync(appInfo, 'license', '');
-              await setStoreAsync(appInfo, 'userId', '');
-
-              dialog.showMessageBox(mainWindow, options).then(result => {
-                if (result.response === 0) { // User clicked 'OK'
-                  mainWindow.webContents.send('status', { status: "error" });
-                }
-              });
-            }
-          } else {
-            mainWindow.webContents.send('checkRes', { username: '', password: '', rememberMe: false });
-          }
+          checkInternetAndAutoLogin();
         } catch (error) {
-          const options = {
-            type: 'error',
-            buttons: ['OK'],
-            defaultId: 0,
-            cancelId: 0,
-            title: 'Auth Error!',
-            message: 'Login Error!',
-            detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
-            alwaysOnTop: true
-          };
-          await setStoreAsync(appInfo, 'username', '');
-          await setStoreAsync(appInfo, 'password', '');
-          await setStoreAsync(appInfo, 'rememberMe', false);
-          await setStoreAsync(appInfo, 'license', '');
-          await setStoreAsync(appInfo, 'userId', '');
-
-          dialog.showMessageBox(mainWindow, options).then(result => {
-            if (result.response === 0) { // User clicked 'OK'
-              mainWindow.webContents.send('status', { status: "error" });
-            }
-          });
+          handleError(error.message);
         }
         break;
 
@@ -1662,13 +1662,8 @@ app.whenReady().then(async () => {
               if (respond.mediaData !== null) {
                 bckMedia(respond.mediaData);
               }
-              // else {
-              //   syncMedia();
-              // }
 
               clearTimeout(logoutTimer);
-              // setTimeout(logout, 3600000); // 3600000 milliseconds = 1 hour
-              // Set up the interval to call checkLicenseStatus every 60 minutes
               logoutTimer = setInterval(async () => {
                 await checkLicenseStatus();
               }, 1 * 1000 * 60 * 60);
@@ -1782,7 +1777,7 @@ app.whenReady().then(async () => {
     const userId = await getStoreAsync(appInfo, 'userId');
     try {
       const result = await userMediaUpdate(userId, videoDetailsList, playListDetailsList);
-      console.log(result);
+      // console.log(result);
     } catch (error) {
       console.error('Failed to update user media:', error);
     }
@@ -2140,15 +2135,34 @@ app.whenReady().then(async () => {
     await logoutApi(userId);
   };
 
+  // async function checkLicenseStatus() {
+  //   const userId = await getStoreAsync(appInfo, 'userId');
+  //   // Check the license validity for the user
+  //   const licenseCheckResult = await checkLicense(userId);
+  //   // If the license is not valid, proceed with the logout
+  //   if (licenseCheckResult.status !== "success") {
+  //     await logout();
+  //   }
+  // };
+
   async function checkLicenseStatus() {
-    const userId = await getStoreAsync(appInfo, 'userId');
-    // Check the license validity for the user
-    const licenseCheckResult = await checkLicense(userId);
-    // If the license is not valid, proceed with the logout
-    if (licenseCheckResult.status !== "success") {
-      await logout();
+    try {
+      // Check for internet connection
+      await internetAvailable();
+      console.log('Internet is available, checking license status.');
+  
+      const userId = await getStoreAsync(appInfo, 'userId');
+      // Check the license validity for the user
+      const licenseCheckResult = await checkLicense(userId);
+  
+      // If the license is not valid, proceed with the logout
+      if (licenseCheckResult.status !== "success") {
+        await logout();
+      }
+    } catch (error) {
+      console.log('No internet connection, skipping license check.');
     }
-  };
+  }
 
   ipcMain.on('logout', async (event, obj) => {
     // Show confirmation dialog before proceeding
@@ -2160,63 +2174,6 @@ app.whenReady().then(async () => {
 
     logout();
   });
-
-  // ipcMain.on('setCookie', async (event, { cookie }) => {
-  //   try {
-  //     // Check if the cookie is an empty string and adjust accordingly
-  //     if (cookie.trim() === "") {
-  //       cookie = "[]";
-  //     } else {
-  //       // Validate the cookie format
-  //       const isValidFormat = /^\[\s*\{.+\}\s*(,\s*\{.+\}\s*)*\]$/.test(cookie);
-  //       if (!isValidFormat) {
-  //         return new Promise((resolve) => {
-  //           const options = {
-  //             type: 'error',
-  //             title: 'Invalid cookie format',
-  //             message: `The correct format should be like [{ "key": "value" }, { "key": "value" }]`
-  //           };
-
-  //           dialog.showMessageBox(mainWindow, options).then(result => {
-  //             resolve(result.response === 0); // Resolve to true if 'Yes' (button index 0) was clicked
-  //           });
-  //         });
-  //       }
-  //     }
-
-  //     // Parse cookie if it's a string that needs to be an array
-  //     if (typeof cookie === 'string') {
-  //       cookie = JSON.parse(cookie);
-  //     }
-
-  //     // Save the cookie to your store
-  //     await setStoreAsync(appInfo, 'cookie', cookie);
-  //     console.log('Cookie updated:', cookie);
-
-  //     // Assuming `appInfo.store` contains the data you want to write to a JSON file
-  //     const data = { ...appInfo.store };
-
-  //     // Specify the path and filename for the JSON file
-  //     const filePath = path.join(userDataPath, 'data.json');
-
-  //     // Write the JSON data to a file
-  //     fs.writeFile(filePath, JSON.stringify(data.cookie), (err) => {
-  //       if (err) {
-  //         console.error('Failed to write file:', err);
-  //         event.reply('file-write-error', 'Failed to write data to file.');
-  //       } else {
-  //         console.log('Data written to file successfully');
-  //         event.reply('file-write-success', 'Data written to file successfully.');
-  //       }
-  //     });
-
-  //     // Send the updated data back to the renderer process
-  //     mainWindow.webContents.send('appInfo', data);
-  //   } catch (error) {
-  //     console.error('Error processing cookie:', error);
-  //     event.reply('cookie-format-error', error.message);
-  //   }
-  // });
 
   ipcMain.on('setCookie', async (event, { cookie }) => {
     try {
@@ -2293,7 +2250,6 @@ app.whenReady().then(async () => {
 
   createWindow();
   autoUpdater.checkForUpdates();
-  // setInterval(checkPlaylistUpdates, 1000 * 60 * 1); // Check every 1 minutes
 
   const isPortInUse = await checkPort(expressPort);
   if (isPortInUse) {
@@ -2323,8 +2279,6 @@ app.whenReady().then(async () => {
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    // if (BrowserWindow.getAllWindows().length === 0) createWindow()
-
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     } else {
@@ -2341,11 +2295,6 @@ app.whenReady().then(async () => {
         mainWindow.show();
       }
     },
-    // {
-    //   label: 'Quit',
-    //   click() { app.quit(); },
-    //   accelerator: 'CommandOrControl+Q'
-    // }
     {
       label: 'Quit',
       click: async function () {
