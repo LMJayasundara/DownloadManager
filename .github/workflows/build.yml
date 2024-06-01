@@ -1,61 +1,3 @@
-# name: Build and Package Electron App
-
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   build:
-#     strategy:
-#       matrix:
-#         # os: [macos-latest, ubuntu-latest, windows-latest]
-#         os: [windows-latest]
-
-#     runs-on: ${{ matrix.os }}
-
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v4  # Updated to the latest version
-
-#       - name: Set up Node.js
-#         uses: actions/setup-node@v4  # Updated to the latest version
-#         with:
-#           node-version: '20'  # Specify Node.js 20
-
-#       - name: Cache node modules
-#         uses: actions/cache@v4  # Updated to the latest version
-#         with:
-#           path: ~/.npm
-#           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-#           restore-keys: |
-#             ${{ runner.os }}-node-
-
-#       - name: Install dependencies
-#         run: npm install
-
-#       - name: Install electron-builder
-#         run: npm install electron-builder --save-dev
-
-#       - name: Build and package Electron app
-#         run: |
-#           if [[ "$RUNNER_OS" == "macOS" ]]; then
-#             npm run build:mac
-#           elif [[ "$RUNNER_OS" == "Linux" ]]; then
-#             npm run build:linux
-#           elif [[ "$RUNNER_OS" == "Windows" ]]; then
-#             npm run build:win
-#           fi
-#         shell: bash
-
-#       - name: Upload artifact
-#         uses: actions/upload-artifact@v3  # Ensure we are using the latest version
-#         with:
-#           name: Play-Downloader-${{ matrix.os }}
-#           path: dist/
-
-#########################################################################################
-
 name: Build and Package Electron App
 
 on:
@@ -67,6 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
+        # os: [macos-latest, ubuntu-latest, windows-latest]
         os: [windows-latest]
 
     runs-on: ${{ matrix.os }}
@@ -102,14 +45,11 @@ jobs:
             npm run build:linux
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
             npm run build:win
+          fi
         shell: bash
 
-      - name: Compress artifacts
-        if: always()
-        run: zip -r Play-Downloader-${{ matrix.os }}.zip dist/
-
-      - name: Upload compressed artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v3  # Ensure we are using the latest version
         with:
           name: Play-Downloader-${{ matrix.os }}
-          path: Play-Downloader-${{ matrix.os }}.zip
+          path: dist/
