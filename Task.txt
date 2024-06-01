@@ -131,6 +131,7 @@ My Suggestions:
 - When deleting video shoud not delete playlist videos
 - in Home shoud show videos only not in playlist videos in playlist
 - add sync and backup buton to the setting page
+- update download into sidebar and option for pause and cancel
 
 #######################
 Description:
