@@ -55,6 +55,15 @@ const VideoCard = ({ video, index, setDownloadStatus }) => {
     return title;
   }
 
+  function truncateAuthor(author, maxLength) {
+    if (!author) return "";
+    // Check if the author name has no spaces
+    if (author.indexOf(' ') === -1 && author.length > maxLength) {
+        return author.slice(0, maxLength) + '...';
+    }
+    return author;
+  }
+
   const handleDownload = () => {
     console.log('Download requested for video ID:', video.id);
     ipcRenderer.send('downloadVideo', { url: video.url, quality: video.quality, format: video.format }); // Ensure these details are correct as per your requirements
@@ -109,7 +118,7 @@ const VideoCard = ({ video, index, setDownloadStatus }) => {
       <div className="p-2">
         <div className="flex items-center space-x-3 mt-2">
           <img src={video.authorPhoto} alt={video.author} className="h-10 w-10 rounded-full object-cover" />
-          <span className="text-sm font-semibold">{video.author}</span>
+          <span className="text-sm font-semibold">{truncateAuthor(video.author, 12)}</span>
         </div>
         <h3 className="text-md font-semibold mt-1" style={{ minHeight: '4rem' }}>{truncateTitle(video.title, 8)}</h3>
       </div>
