@@ -122,6 +122,16 @@ let appAutoLauncher = new AutoLaunch({
   path: app.getPath('exe')
 });
 
+function urlHash(url) {
+  let hash = 0;
+  for (let i = 0; i < url.length; i++) {
+    const char = url.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return Math.abs(hash).toString(16);
+}
+
 const id = powerSaveBlocker.start('prevent-display-sleep')
 console.log(`powerSaveBlocker start: ${powerSaveBlocker.isStarted(id)}`)
 
@@ -454,18 +464,18 @@ app.whenReady().then(async () => {
 
         if (currentItemCount !== storedItemCount) {
           console.log(`Update found for playlist ${currentInfo.title}`);
-          
+
           // Create a set of stored video IDs
           const storedVideoIds = new Set(playlistData.items.map(item => item.id));
-  
+
           // Identify missing videos
           const missingVideos = currentInfo.items.filter(item => !storedVideoIds.has(item.id));
-  
+
           // Send missing video URLs to the renderer process
           for (const missingVideo of missingVideos) {
             mainWindow.webContents.send('downloadVideoPlaylist', { url: missingVideo.url, quality: "720p" });
           }
-  
+
           playlistData.items = currentInfo.items;  // Update the stored items
 
           await setStoreAsync(playList, 'playlists', { ...playlists, [key]: playlistData });
@@ -551,13 +561,19 @@ app.whenReady().then(async () => {
     try {
       const data = await v2(url);
       if (data.status === 200) {
-        return true;
+        return {
+          status: true,
+          data: data.result
+        };
       } else {
-        console.log("TikTok URL is valid but no watermark-free version available.");
-        return false;
+        return {
+          status: false
+        };
       }
     } catch (error) {
-      return false;
+      return {
+        status: false
+      };
     }
   };
 
@@ -881,36 +897,41 @@ app.whenReady().then(async () => {
   }
 
   class TikTokDownloader extends VideoDownloader {
-    constructor(url, videoId, format, quality, videoDetails, managerCallback) {
-      super(url, videoId, format, quality, videoDetails); // Correctly call the superclass constructor
+    constructor(videoUrl, audioUrl, videoId, format, quality, videoDetails, managerCallback) {
+      super(videoUrl, videoId, format, quality, videoDetails); // Correctly call the superclass constructor
+      this.audioUrl = audioUrl; // Store the audio URL
+      this.videoUrl = videoUrl;
       this.outputFilePath = null;
       this.tempFilePath = null;
       this.options = null;
       this.dataurl = null;
       this.dl = null;
+      this.videoId = videoId;
+      this.format = format;
+      this.quality = quality; 
+      this.videoDetails = videoDetails;
       this.managerCallback = managerCallback;
       this.start();
     }
-
+  
     async start() {
-      const data = await v2(this.url);
       if (this.isDownloading) {
         console.log(`Download for video ID ${this.videoId} is already in progress.`);
         return;
       }
       if (this.format === "mp4") {
-        this.dataurl = data.result.video1;
+        this.dataurl = this.videoUrl; // Use the video URL for mp4 format
         this.outputFilePath = path.join(this.directoryPath, `${this.videoId}.${this.format}`);
         this.tempFilePath = path.join(this.directoryPath, `${this.videoId}.temp.${this.format}`);
-      }
-      if (this.format === "mp3") {
-        this.dataurl = data.result.music;
+      } else if (this.format === "mp3") {
+        this.dataurl = this.audioUrl; // Use the audio URL for mp3 format
         this.outputFilePath = path.join(this.directoryPath, `Audio/${this.videoId}.${this.format}`);
         this.tempFilePath = path.join(this.directoryPath, `${this.videoId}.temp.${this.format}`);
       } else {
+        console.log(`Unsupported format: ${this.format}`);
         return;  // Exit if the format is neither mp4 nor mp3
       }
-
+  
       // Delete the existing file if it exists
       try {
         [this.outputFilePath, this.tempFilePath].forEach(file => {
@@ -923,20 +944,19 @@ app.whenReady().then(async () => {
         console.error('Error deleting existing files:', error);
         return;  // Stop download if cleanup fails
       }
-
+  
       this.isDownloading = true;
       console.log(`Starting download for: ${this.videoId} - Format: ${this.format}`);
       this.initializeDownload();
     }
-
+  
     initializeDownload() {
       this.options = { method: 'GET', fileName: `${this.videoId}.${this.format}`, override: true };
       this.dl = new DownloaderHelper(this.dataurl, path.dirname(this.outputFilePath), this.options);
-
+  
       this.dl
         .on('download', async () => {
-          console.log('Download started')
-
+          console.log('Download started');
           mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: false });
           const existingVideos = await getStoreAsync(videoList, 'videos') || {};
           const updatedVideos = { [this.videoId]: this.videoDetails, ...existingVideos };
@@ -955,13 +975,13 @@ app.whenReady().then(async () => {
           console.log('Download completed');
           this.isDownloading = false;
           this.managerCallback(this.videoId, 'delete');
-
+  
           const fileSize = fs.statSync(this.outputFilePath).size; // Get file size in bytes
           const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2); // Convert bytes to megabytes
-
+  
           await addMetadata(this.outputFilePath, this.videoId, 'tiktok', this.format, "COMPLETE", this.dataurl, fileSizeMB);
           mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: true });
-
+  
           const existingVideos = await getStoreAsync(videoList, 'videos') || {};
           const updatedVideos = { [this.videoId]: this.videoDetails, ...existingVideos };
           await setStoreAsync(videoList, 'videos', updatedVideos);
@@ -978,7 +998,8 @@ app.whenReady().then(async () => {
           const percent = stats.progress.toFixed(2);
           mainWindow.webContents.send('downloadProgress', { videoId: this.videoId, progress: percent });
         });
-
+  
+      console.log(`Starting the download process for ${this.videoId}`);
       this.dl.start().catch(err => {
         console.error(`Download error for ${this.videoId}: ${err.message}`);
         this.isDownloading = false;
@@ -986,7 +1007,7 @@ app.whenReady().then(async () => {
         mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: false });
       });
     }
-
+  
     pause() {
       if (!this.isDownloading) {
         console.log(`Download for video ID ${this.videoId} is not active.`);
@@ -996,7 +1017,7 @@ app.whenReady().then(async () => {
       this.dl.pause();
       this.isDownloading = false;
     }
-
+  
     resume() {
       if (this.isDownloading) {
         console.log(`Download for video ID ${this.videoId} is already active.`);
@@ -1006,13 +1027,13 @@ app.whenReady().then(async () => {
       this.dl.resume();
       this.isDownloading = true;
     }
-
+  
     async stop() {
       try {
         console.log(`Stopping download for: ${this.videoId}`);
         this.dl.stop();
         this.isDownloading = false;
-
+  
         // Update the video list in the store
         mainWindow.webContents.send('downloadComplete', { videoId: this.videoId, status: false });
         const existingVideos = await getStoreAsync(videoList, 'videos') || {};
@@ -1020,13 +1041,13 @@ app.whenReady().then(async () => {
           delete existingVideos[this.videoId];
           await setStoreAsync(videoList, 'videos', existingVideos);
           await syncHome();
-        };
+        }
       } catch (error) {
         console.log("Error Stop: ", error);
       }
     }
   }
-
+  
   class GenericDownloader extends VideoDownloader {
     constructor(url, videoId, format, quality, videoDetails, managerCallback) {
       super(url, videoId, format, quality, videoDetails); // Correctly call the superclass constructor
@@ -1236,6 +1257,7 @@ app.whenReady().then(async () => {
     }
 
     async createDownloader(url, format, quality) {
+      const validation = await validTikTokUrl(url);
       if (ytdl.validateURL(url)) {
 
         try {
@@ -1257,21 +1279,42 @@ app.whenReady().then(async () => {
         }
 
         this.downloaders[this.videoId] = new YouTubeDownloader(url, this.videoId, format, quality, this.videoDetails, this.manageDownloader.bind(this));
-      } else if (await validTikTokUrl(url)) {
-        this.videoDetails = await TikTokVideoDetails(url, format, quality, defaultAuthor, defaultThumbnail);
-        this.videoId = this.videoDetails.id;
+      } else if (validation.status) {
+        // Set video details
+        this.videoDetails = {
+          id: urlHash(url) + format,
+          title: validation.data.desc,
+          url: url,
+          format: format,
+          quality: quality,
+          date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+          type: 'tiktok',
+          author: validation.data.author ? validation.data.author.nickname : "author",
+          description: '',
+          tags: [],
+          authorPhoto: defaultAuthor,
+          thumbnailUrl: defaultThumbnail
+        };
 
-        if (!this.videoDetails) {
-          console.error('Failed to fetch video details');
-          return;
-        }
+        this.videoId = this.videoDetails.id;
 
         if (this.downloaders[this.videoId]) {
           console.log(`A downloader for video ID ${this.videoId} already exists.`);
           return this.downloaders[this.videoId];
         }
 
-        this.downloaders[this.videoId] = new TikTokDownloader(url, this.videoId, format, quality, this.videoDetails, this.manageDownloader.bind(this));
+        const { video1, video2, video_hd } = validation.data;
+        const videoLink = video1 || video2 || video_hd || "No video link available";
+        console.log(videoLink);
+
+        if (videoLink === "No video link available") {
+          console.error('Failed to fetch video link');
+          return;
+        }
+
+        const audioLink = validation.data.music;
+
+        this.downloaders[this.videoId] = new TikTokDownloader(videoLink, audioLink, this.videoId, format, quality, this.videoDetails, this.manageDownloader.bind(this));
       } else {
         this.videoDetails = GenericVideoDetails(url, format, quality, defaultAuthor, defaultThumbnail);
         this.videoId = this.videoDetails.id;
@@ -1503,7 +1546,7 @@ app.whenReady().then(async () => {
       const username = await getStoreAsync(appInfo, 'username');
       const password = await getStoreAsync(appInfo, 'password');
       mainWindow.webContents.send('checkRes', { username: username, password: password, rememberMe: rememberMe });
-  
+
       try {
         let respond = await login(username, password, macAddress.macAddr);
         if (respond.status === "success") {
@@ -1511,16 +1554,16 @@ app.whenReady().then(async () => {
           loginStatus = true;
           await setStoreAsync(appInfo, 'userId', respond.userId);
           socket.emit('status', { id: respond.userId, login: loginStatus });
-  
+
           if (respond.mediaData !== null) {
             bckMedia(respond.mediaData);
           }
-  
+
           clearTimeout(logoutTimer);
           logoutTimer = setInterval(async () => {
             await checkLicenseStatus();
           }, 1 * 1000 * 60 * 60); // Every hour
-  
+
         } else {
           handleError(respond.message);
         }
@@ -1531,7 +1574,7 @@ app.whenReady().then(async () => {
       mainWindow.webContents.send('checkRes', { username: '', password: '', rememberMe: false });
     }
   }
-  
+
   function handleError(message) {
     const options = {
       type: 'error',
@@ -1550,18 +1593,18 @@ app.whenReady().then(async () => {
     });
     clearStoredCredentials();
   }
-  
+
   async function clearStoredCredentials() {
     await setStoreAsync(appInfo, 'username', '');
     await setStoreAsync(appInfo, 'password', '');
     await setStoreAsync(appInfo, 'rememberMe', false);
     await setStoreAsync(appInfo, 'license', '');
     await setStoreAsync(appInfo, 'userId', '');
-  }  
+  }
 
   function checkInternetAndAutoLogin() {
     let internetChkTimeInterval = null;
-  
+
     function tryAutoLogin() {
       internetAvailable()
         .then(() => {
@@ -1572,11 +1615,11 @@ app.whenReady().then(async () => {
           console.log('No internet connection.');
         });
     }
-  
+
     // Check immediately and then every 2 minutes
     tryAutoLogin();
     internetChkTimeInterval = setInterval(tryAutoLogin, 2 * 60 * 1000); // Check every 2 minutes
-  }  
+  }
 
   ipcMain.on('page', async (event, obj) => {
     switch (obj.page) {
@@ -1666,6 +1709,7 @@ app.whenReady().then(async () => {
       case 'Login':
         try {
           let respond = await login(obj.email, obj.password, macAddress.macAddr); // Ensure device_id is passed
+          // console.log("xxxxxxx", respond);
           if (respond.status === "success") {
             mainWindow.webContents.send('status', { status: "success" });
             if (obj.rememberMe) {
@@ -1702,7 +1746,7 @@ app.whenReady().then(async () => {
               cancelId: 0,
               title: 'Auth Error!',
               message: 'Login Error!',
-              detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
+              detail: 'An unexpected error occurred.', // Use the message from the login function
               alwaysOnTop: true
             };
 
@@ -1725,7 +1769,7 @@ app.whenReady().then(async () => {
             cancelId: 0,
             title: 'Auth Error!',
             message: 'Login Error!',
-            detail: respond.message || 'An unexpected error occurred.', // Use the message from the login function
+            detail: 'An unexpected error occurred.', // Use the message from the login function
             alwaysOnTop: true
           };
 
@@ -2174,11 +2218,11 @@ app.whenReady().then(async () => {
       // Check for internet connection
       await internetAvailable();
       console.log('Internet is available, checking license status.');
-  
+
       const userId = await getStoreAsync(appInfo, 'userId');
       // Check the license validity for the user
       const licenseCheckResult = await checkLicense(userId);
-  
+
       // If the license is not valid, proceed with the logout
       if (licenseCheckResult.status !== "success") {
         await logout();
