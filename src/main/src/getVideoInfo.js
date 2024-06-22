@@ -46,9 +46,8 @@ export async function TikTokVideoDetails(url, format, quality, defaultAuthor, de
       author: info.result.author.nickname,
       description: '',
       tags: [],
-      authorPhoto: info.result.author.avatar || defaultAuthor,
-      thumbnailUrl: info.result.video ? info.result.video.cover : defaultThumbnail
-
+      authorPhoto: defaultAuthor,
+      thumbnailUrl: defaultThumbnail
     };
   } catch (error) {
     console.log(error);
