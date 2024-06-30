@@ -22,7 +22,7 @@ export async function login(username, password, device_id) {
     // console.error('Failed to login user:', error.response ? error.response.data : error.message);
     return {
       status: "error",
-      message: error.response ? error.response.data : 'Network error or server is down'
+      message: error.response ? error.response.data : 'Network error! Check your connection'
     };
   }
 }
@@ -47,7 +47,7 @@ export async function checkLicense(userId) {
   } catch (error) {
     return {
       status: "error",
-      message: error.response ? error.response.data : 'Network error or server is down'
+      message: error.response ? error.response.data : 'Network error! Check your connection'
     };
   }
 }

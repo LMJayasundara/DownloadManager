@@ -28,7 +28,7 @@ import AutoLaunch from 'auto-launch';
 
 import { first, all } from "macaddress-local-machine";
 // // Get the first MAC address
-const macAddress = first();
+// const macAddress = first();
 
 let playlistCheckTimer = null;
 let mainWindow = null, progressBar = null;
@@ -112,13 +112,22 @@ function checkPort(port) {
   });
 }
 
+async function getMacAddress() {
+  try {
+    const macAddress = first();
+    return macAddress.macAddr;
+  } catch (error) {
+    return "00:00:00:00:00:00";
+  }
+}
+
 ipcMain.on('shutdown', () => {
   app.quit();
 });
 
 let appAutoLauncher = new AutoLaunch({
   isHidden: true,
-  name: 'Play Downloader',
+  name: 'PlayDownloader',
   path: app.getPath('exe')
 });
 
@@ -301,7 +310,7 @@ async function createWindow() {
     autoHideMenuBar: true,
     icon: icon,
     center: true,
-    title: "Play Downloader",
+    title: "PlayDownloader",
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: true,
@@ -1548,7 +1557,8 @@ app.whenReady().then(async () => {
       mainWindow.webContents.send('checkRes', { username: username, password: password, rememberMe: rememberMe });
 
       try {
-        let respond = await login(username, password, macAddress.macAddr);
+        const macAddress = await getMacAddress();
+        let respond = await login(username, password, macAddress);
         if (respond.status === "success") {
           mainWindow.webContents.send('status', { status: "success" });
           loginStatus = true;
@@ -1576,6 +1586,7 @@ app.whenReady().then(async () => {
   }
 
   function handleError(message) {
+    const errorMessage = isHtml(message) ? 'An unexpected error occurred.' : message;
     const options = {
       type: 'error',
       buttons: ['OK'],
@@ -1583,7 +1594,7 @@ app.whenReady().then(async () => {
       cancelId: 0,
       title: 'Auth Error!',
       message: 'Login Error!',
-      detail: message || 'An unexpected error occurred.',
+      detail: errorMessage,
       alwaysOnTop: true
     };
     dialog.showMessageBox(mainWindow, options).then(result => {
@@ -1619,6 +1630,12 @@ app.whenReady().then(async () => {
     // Check immediately and then every 2 minutes
     tryAutoLogin();
     internetChkTimeInterval = setInterval(tryAutoLogin, 2 * 60 * 1000); // Check every 2 minutes
+  }
+
+  // Function to check if a string contains HTML
+  function isHtml(str) {
+    const doc = new DOMParser().parseFromString(str, 'text/html');
+    return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
   }
 
   ipcMain.on('page', async (event, obj) => {
@@ -1708,7 +1725,8 @@ app.whenReady().then(async () => {
 
       case 'Login':
         try {
-          let respond = await login(obj.email, obj.password, macAddress.macAddr); // Ensure device_id is passed
+          const macAddress = await getMacAddress();
+          let respond = await login(obj.email, obj.password, macAddress); // Ensure device_id is passed
           // console.log("xxxxxxx", respond);
           if (respond.status === "success") {
             mainWindow.webContents.send('status', { status: "success" });
@@ -1739,6 +1757,7 @@ app.whenReady().then(async () => {
               await setStoreAsync(appInfo, 'userId', '');
             }
           } else {
+            const errorMessage = isHtml(respond.message) ? 'An unexpected error occurred.' : respond.message;
             const options = {
               type: 'error',
               buttons: ['OK'],
@@ -1746,7 +1765,7 @@ app.whenReady().then(async () => {
               cancelId: 0,
               title: 'Auth Error!',
               message: 'Login Error!',
-              detail: 'An unexpected error occurred.', // Use the message from the login function
+              detail: errorMessage, // Use the message from the login function
               alwaysOnTop: true
             };
 
@@ -1762,6 +1781,7 @@ app.whenReady().then(async () => {
             });
           }
         } catch (error) {
+          const errorMessage = isHtml(respond.message) ? 'An unexpected error occurred.' : respond.message;
           const options = {
             type: 'error',
             buttons: ['OK'],
@@ -1769,7 +1789,7 @@ app.whenReady().then(async () => {
             cancelId: 0,
             title: 'Auth Error!',
             message: 'Login Error!',
-            detail: 'An unexpected error occurred.', // Use the message from the login function
+            detail: errorMessage, // Use the message from the login function
             alwaysOnTop: true
           };
 
@@ -2376,7 +2396,7 @@ app.whenReady().then(async () => {
     }
   ]);
 
-  tray.setToolTip('Play Downloader');
+  tray.setToolTip('PlayDownloader');
   tray.setContextMenu(contextMenu);
   // Add this to handle double-click on the tray icon
   tray.on('double-click', () => {

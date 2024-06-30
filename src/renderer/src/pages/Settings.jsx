@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { FaSave, FaDownload, FaTrashAlt, FaArrowLeft, FaSync } from 'react-icons/fa'; // Example icons
+import React, { useState, useEffect, useRef } from 'react';
+import { FaSave, FaDownload, FaTrashAlt, FaArrowLeft } from 'react-icons/fa'; // Example icons
 import { useData } from '../DownloadContext';
 const ipcRenderer = electron.ipcRenderer;
 
 function Settings() {
   const { appInfo } = useData();
-  const [cookie, setCookie] = useState(appInfo.cookie);
+  const [cookie, setCookie] = useState(appInfo.cookie.length ? JSON.stringify(appInfo.cookie, null, 2) : '');
   const [interval, setInterval] = useState(appInfo.playlistInterval);
+  const [isValidJson, setIsValidJson] = useState(true);
+  const textareaRef = useRef(null);
 
   // Function to handle logout logic
   const logout = () => {
@@ -20,6 +22,17 @@ function Settings() {
       ipcRenderer.removeAllListeners('page');
     };
   }, []);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    const adjustHeight = () => {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    };
+    adjustHeight(); // Adjust the height initially
+    textarea.addEventListener('input', adjustHeight);
+    return () => textarea.removeEventListener('input', adjustHeight);
+  }, [cookie]);
 
   // Add function stubs for the new actions
   const installBrowserExtension = () => {
@@ -59,8 +72,16 @@ function Settings() {
 
   // Function to update the cookie in the store and main process
   const saveCookie = () => {
-    console.log("Saving Cookie:", cookie);
-    ipcRenderer.send('setCookie', { cookie: cookie });
+    try {
+      const parsedCookie = cookie.trim() === '' ? [] : JSON.parse(cookie);
+      console.log("Saving Cookie:", parsedCookie);
+      ipcRenderer.send('setCookie', { cookie: parsedCookie });
+      setIsValidJson(true);
+      setCookie(cookie.trim() === '' ? '' : JSON.stringify(parsedCookie, null, 2)); // Reformat if not empty
+    } catch (e) {
+      console.error("Invalid JSON format:", e);
+      setIsValidJson(false);
+    }
   };
 
   // Function to update the check playlist interval in the store and main process
@@ -68,6 +89,7 @@ function Settings() {
     console.log("Saving Interval:", interval);
     ipcRenderer.send('setCheckPlaylistInterval', { interval: interval });
   };
+
   return (
     <div className='flex flex-col h-full items-center justify-center p-4 border-2 rounded-lg w-full'>
 
@@ -86,11 +108,14 @@ function Settings() {
               </p>
             </div>
             <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-2/3">
-              <input
-                className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              <textarea
+                ref={textareaRef}
+                className={`flex-grow p-3 rounded-lg border-2 ${isValidJson ? 'border-gray-300' : 'border-red-500'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
                 value={cookie}
                 onChange={(e) => setCookie(e.target.value)}
                 placeholder="Enter your YouTube Cookie..."
+                rows={cookie.length === 0 ? 1 : 10} // Adjust the textarea rows based on the cookie length
+                style={{ maxHeight: '150px', minHeight: '50px'}} // Set max width and hide horizontal overflow
               />
               <button className="py-2 px-4 bg-blue-500 rounded-lg text-white font-bold text-sm hover:bg-blue-600 focus:outline-none flex items-center justify-center space-x-2"
                 onClick={saveCookie}
@@ -186,9 +211,6 @@ function Settings() {
 
     </div>
   );
-
 }
 
 export default Settings;
-
-

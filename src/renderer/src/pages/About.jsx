@@ -14,7 +14,7 @@ const About = () => {
   }, []);
 
   // Assuming these values might be dynamic or come from some global state or props
-  const softwareName = "Play Downloader";
+  const softwareName = "PlayDownloader";
   const currentVersion = aboutApp.currentVersion;
   const licenseKey = aboutApp.licenseKey;
   // const currentYear = new Date().getFullYear();
