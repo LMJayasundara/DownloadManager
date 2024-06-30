@@ -86,7 +86,7 @@ const VideoCard = ({ video, index, id }) => {
           <div className="absolute bottom-0 left-0 bg-green-500" style={{ width: `${progress}%`, height: '4px' }}></div>
         )}
 
-        {!completed && progress && progress < 100 && (
+        {/* {!completed && progress && progress < 100 && (
           <div className="absolute top-2 right-2 flex space-x-2">
             <button onClick={(e) => { e.stopPropagation(); handlePauseResume(); }}>
               {isPaused ? <FaPlay className="text-white" /> : <FaPauseCircle className="text-white" />}
@@ -95,7 +95,7 @@ const VideoCard = ({ video, index, id }) => {
               <FaStopCircle className="text-white" />
             </button>
           </div>
-        )}
+        )} */}
 
         {video && !video.fileExist && (
           <div className="absolute top-2 left-2 flex space-x-2">

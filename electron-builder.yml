@@ -1,5 +1,5 @@
 appId: com.playdownloader.app
-productName: Play Downloader
+productName: PlayDownloader
 directories:
   buildResources: build
 extraFiles:
@@ -19,7 +19,7 @@ asarUnpack:
   # - 'node_modules/handbrake-js/*'
   # - 'node_modules/ffprobe-static/bin/${os}/${arch}/*'
 win:
-  executableName: Play Downloader
+  executableName: PlayDownloader
   # extraResources:
   #   - from: 'extension'
   #     to: 'extension'  # Destination path relative to the installation directory

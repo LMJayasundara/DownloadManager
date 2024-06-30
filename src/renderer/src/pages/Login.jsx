@@ -102,7 +102,7 @@ function Login() {
         <img src={AppLogo} alt="App Logo" className="w-32 h-32" /> {/* Adjust size as needed */}
 
         {/* Login Text */}
-        <h1 className='text-2xl font-bold text-gray-800'>Login to Play Downloader</h1>
+        <h1 className='text-2xl font-bold text-gray-800'>Login to PlayDownloader</h1>
 
         <div className='w-full max-w-xs'>
           <form className='space-y-4' onSubmit={(e) => e.preventDefault()}>

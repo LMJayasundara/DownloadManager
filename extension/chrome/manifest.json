@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Play Downloader",
+    "name": "PlayDownloader",
     "version": "1.0",
-    "description": "Play Downloader Extension",
+    "description": "PlayDownloader Extension",
     "icons": {
         "48": "icon.png"
     },

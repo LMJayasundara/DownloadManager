@@ -18,7 +18,7 @@ export async function createWindow() {
     autoHideMenuBar: true,
     icon: icon,
     center: true,
-    title: "Play Downloader",
+    title: "PlayDownloader",
     webPreferences: {
       preload: join(__dirname, '../../preload/index.js'),
       sandbox: true,

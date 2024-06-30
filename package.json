@@ -1,7 +1,7 @@
 {
   "name": "play-downloader",
-  "version": "1.0.9",
-  "description": "Play Downloader",
+  "version": "1.0.10",
+  "description": "PlayDownloader",
   "main": "./out/main/index.js",
   "author": "PlayDownloader.com",
   "homepage": "https://PlayDownloader.com",
